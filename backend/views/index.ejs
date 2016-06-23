@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<head>
+  <title>Title</title>
+  <link rel="stylesheet" href="stylesheets/stylesheet_light.css">
+  <link href='https://fonts.googleapis.com/css?family=Product+Sans' rel='stylesheet' type='text/css'>
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+</head>
+<body>
+<nav id="top">
+  <button>Logo</button>
+  <button><a href="index.html">Home</a></button>
+  <button><a href="about.html">About</a></button>
+  <div class="search">
+    <input class="search-bar" type="text" placeholder="Search our website" required>
+    <button class="search-button">Search</button>
+    <button class="register">Register</button>
+    <button class="login">Log In</button>
+  </div>
+</nav>
+
+
+<section id="main-section">
+  <div class="add-card-div">
+    <button id="add-card-button">+ ADD CARD</button>
+  </div>
+
+  <div class="preview-container hide">
+    <div class="title">Title</div>
+    <div class="author">Some guy</div>
+    <div class="tags">
+      <label>tag1</label>
+      <label>tag2</label>
+    </div>
+    <div class="preview">
+      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
+    </div>
+    <div class="date">
+      Date: MM-DD-YYYY
+    </div>
+  </div>
+
+  <!--<div class="preview-container">-->
+  <!--<div class="title">Title</div>-->
+  <!--<div class="author">Some guy</div>-->
+  <!--<div class="tags">-->
+  <!--<label>tag1</label>-->
+  <!--<label>tag2</label>-->
+  <!--</div>-->
+  <!--<div class="preview">-->
+  <!--<img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">-->
+  <!--</div>-->
+  <!--<div class="date">-->
+  <!--Date: MM-DD-YYYY-->
+  <!--</div>-->
+  <!--</div>-->
+
+  <div class="normal-container hide">
+    <div class="title">Title</div>
+    <div class="author">Some guy on MM-DD-YYYY</div>
+    <div class="tags">
+      <label>tag1</label>
+      <label>tag2</label>
+    </div>
+    <div class="exit">
+      <button class="exit-button">X</button>
+    </div>
+    <div class="text-field">
+      <p></p>
+    </div>
+    <div class="preview-box">
+      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
+      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
+      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
+      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
+      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
+      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
+      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
+    </div>
+    <div class="download">
+      <button class="action-button download-button">
+        DOWNLOAD
+      </button>
+    </div>
+  </div>
+
+  <div class="chat hide">
+    <div class="chat-heading">CHAT</div>
+    <div class="message-feed">
+      <div class="message">
+        <p><em>Some guy on MM-DD-YYYY</em></p>
+        <h1>Message</h1>
+        <p class="message-content">Some stuff</p>
+      </div>
+    </div>
+
+    <div class="text-field">
+      <textarea rows="3" cols="20" placeholder="Type your text here!"></textarea>
+      <div class="submit">
+        <button class="action-button submit-button">
+          SUBMIT
+        </button>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section id="normal-section">
+
+</section>
+
+<section id="edit-section">
+  <div class="edit-container hide">
+    <div class="title">
+      <input id="new-card-title" placeholder="Enter the title">
+    </div>
+    <div class="author">
+      <label>Some guy on MM-DD-YYYY</label>
+    </div>
+    <div class="tags" id = "new-card-tags">
+      <input id="add-tag" placeholder="Add a tag...">
+    </div>
+    <div class="exit">
+      <button class="exit-button">X</button>
+    </div>
+    <div class="text-field">
+      <textarea id="new-card-notes" rows="10" cols="50" placeholder="Type your text here!"></textarea>
+    </div>
+    <div class="upload">
+      <button class="action-button upload-button">
+        UPLOAD A FILE
+      </button>
+    </div>
+
+    <hr>
+
+    <div class="save">
+      <div class="button-list">
+        <button class="action-button save-button">
+          SAVE
+        </button>
+        <button class="action-button cancel-button">
+          CANCEL
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="user-section">
+  <form id="register-form" class="hide" method="post" action="http://localhost:3000/users/register">
+    <h1 class="title">Register an account</h1>
+    <div class="exit">
+      <button type="button" class="exit-button">X</button>
+    </div>
+    <hr>
+    <input type="text" name="name" placeholder="Username">
+    <br>
+    <input type="text" name="email" placeholder="Email address">
+    <br>
+    <input type="password" name="password" placeholder="Password">
+    <br>
+    <input type="submit" value="REGISTER">
+  </form>
+
+  <form id="login-form" class="hide" method="post" action="http://localhost:3000/users/login">
+    <h1 class="title">Log in</h1>
+    <div class="exit">
+      <button type="button" class="exit-button">X</button>
+    </div>
+    <hr>
+    <input type="text" name="email" placeholder="Email address">
+    <br>
+    <input type="password" name="password" placeholder="Password">
+    <br>
+    <input type="submit" value="LOG IN">
+  </form>
+</section>
+<script src="javascripts/app.js"></script>
+</body>
+</html>
