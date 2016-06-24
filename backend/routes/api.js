@@ -1,30 +1,53 @@
 var express = require('express');
 var router = express.Router();
 var Card = require('../models/cards');
+var User = require('../models/users');
+var session = require('client-sessions');
+var textSearch = require('mongoose-text-search');
 
+router.use(session({
+    cookieName: 'session',
+    secret: ';aldksghjf',
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
+}));
 /* GET home page. */
 
-router.get('/', function(req, res, callback) {
+router.get('/', function(req, res) {
     console.log(req.body);
-    Card.find({}, function(err, card) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log('done');
+    if (req.user) {
+        console.log(req.user + ' is logged in! Rendering cards');
+        Card.find({}, function (err, cards) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log('done');
 
-            res.json({
-                data: card
-            })
-        }
-    })
+                res.render('cardList', {cards});
+            }
+        })
+    }
+    else {
+        console.log(req.user + ' There is no user in session! Log in again');
+    }
+
 });
 
+router.get('/search', function(req, res) {
+    console.log('Searching right now!');
+    console.log(req.body);
+
+});
 router.post('/', function(req, res) {
     console.log(req.body);
     var card = new Card(
         {
             title: req.body.title,
             body: req.body.body,
+            author: {
+                id: req.user._id,
+                name: req.user.name
+            }
         }
     );
     card.save(function (err, card) {

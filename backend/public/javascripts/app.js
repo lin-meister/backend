@@ -95,14 +95,32 @@ $(document).ready(function() {
     // Click on register
     $('#top .register').on('click', function() {
         console.log('Creating a new account!');
+        $('#login-form').addClass('hide');
         $('#register-form').removeClass('hide');
         $('#main-section').addClass('darken');
     });
 
     $('#top .login').on('click', function() {
         console.log('Logging in!');
+        $('#register-form').addClass('hide');
         $('#login-form').removeClass('hide');
         $('#main-section').addClass('darken');
+    });
+
+    $('#top .search-button').on('click', function() {
+        console.log('Searching for something!');
+        var criteria = $('#top .search-bar').val();
+        $.ajax({
+            url: "http://localhost:3000/api/search",
+            data: {
+                criteria: criteria
+            },
+            type: "GET",
+            traditional: true,
+            success: function (response) {
+                $('#main-section').append(response);
+            }
+        });
     });
 
     // Adding a new card, brings up edit container
@@ -138,7 +156,7 @@ $(document).ready(function() {
                 type: "POST",
                 traditional: true,
                 success: function (response) {
-                    $('#main-section').append(addPreviewCard(response.data));
+                    $('#main-section').append(response);
                 }
             });
 
@@ -261,11 +279,8 @@ $(document).ready(function() {
         url: "http://localhost:3000/api",
         type: "GET",
         success: function (response) {
-            cards = response.data;
-            console.log(cards);
-            for (var i = counter; i < cards.length; i++) {
-                $('#main-section').append(addPreviewCard(cards[i]));
-            }
+            $('#main-section').append(response);
+            // cards.push(response);
         }
     });
 
@@ -285,7 +300,7 @@ $(document).ready(function() {
         var author = $('<div/>');
         author.addClass('author');
         // Will change author text later
-        author.text('Author');
+        author.text($(this).find('.author')[0].textContent);
 
         var tags = $('<div/>');
         tags.addClass('tags');

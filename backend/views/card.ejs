@@ -1,0 +1,32 @@
+<div class="preview-container" id="<%=card._id%>">
+    <div class="title">
+        <% if (card.title === "") {%>
+            Untitled
+        <%} else { %>
+            <%=card.title%>
+        <%}%>
+    </div>
+    <div class="author">
+        <% if(user) { %>
+        <label>Author: <%=user.username%></label>
+        <% }
+        else { %>
+        <label>Author</label>
+        <% }
+        %>
+    </div>
+    <div class="tags">
+        <% card.tags.map(function(tag) {%>
+            <label><%=tag%></label>
+        <% }); %>
+    </div>
+    <div class="text-field">
+        <p><%=card.body%></p>
+    </div>
+    <div class="preview hide">
+        <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png"/>
+    </div>
+    <div class="date">
+        card.dateCreatedAt
+    </div>
+</div>

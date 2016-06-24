@@ -9,6 +9,8 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var cors = require('cors');
+var User = require('./models/users');
+
 var mongoose = require('mongoose');
 var mongoURL = 'mongodb://localhost/lazyapp';
 mongoose.connect(mongoURL);
@@ -19,8 +21,9 @@ db.once('open', function() {
   console.log('Successfully connected to mongo at:', mongoURL);
 });
 
+var session = require('client-sessions');
+
 var app = express();
-app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,6 +36,34 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
+
+app.use(session({
+  cookieName: 'session',
+  secret: 'asdjklf;a;jra;lkjr',
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000,
+}));
+
+app.use(function(req, res, next) {
+  console.log('User is being set right now!');
+  console.log(req.session)
+  if (req.session && req.session.user) {
+    User.findOne({ email: req.session.user.email }, function(err, user) {
+      if (user) {
+        req.user = user;
+        delete req.user.password; // delete the password from the session
+        req.session.user = user;  //refresh the session value
+        res.locals.user = user;
+        console.log('User is created!');
+      }
+      // finishing processing the middleware and run the route
+      next();
+    });
+  } else {
+    next();
+  }
+});
 
 app.use('/', routes);
 app.use('/api', api);
@@ -44,6 +75,16 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+
+
+function requireLogin(req, res, next) {
+  if (!req.user) {
+    res.redirect('/login');
+  } else {
+    next();
+  }
+}
 
 // error handlers
 

@@ -8,21 +8,31 @@
 <body>
 <nav id="top">
   <button>Logo</button>
-  <button><a href="index.html">Home</a></button>
+  <button><a href="/">Home</a></button>
   <button><a href="about.html">About</a></button>
   <div class="search">
+    <% if(user) {} else { %>
+      <button class="register">Register</button>
+    <% } %>
+    <% if(user) { %>
+      <button>Welcome back, <%=user.username%></button>
+      <button class="logout"><a href="/users/logout">Log Out</a></button>
+    <% }
+    else { %>
+      <button class="login">Log in</button>
+    <% }
+    %>
     <input class="search-bar" type="text" placeholder="Search our website" required>
     <button class="search-button">Search</button>
-    <button class="register">Register</button>
-    <button class="login">Log In</button>
   </div>
 </nav>
 
-
 <section id="main-section">
-  <div class="add-card-div">
-    <button id="add-card-button">+ ADD CARD</button>
-  </div>
+  <% if(user) { %>
+    <div class="add-card-div">
+      <button id="add-card-button">+ ADD CARD</button>
+    </div>
+  <% } else {}%>
 
   <div class="preview-container hide">
     <div class="title">Title</div>
@@ -38,21 +48,6 @@
       Date: MM-DD-YYYY
     </div>
   </div>
-
-  <!--<div class="preview-container">-->
-  <!--<div class="title">Title</div>-->
-  <!--<div class="author">Some guy</div>-->
-  <!--<div class="tags">-->
-  <!--<label>tag1</label>-->
-  <!--<label>tag2</label>-->
-  <!--</div>-->
-  <!--<div class="preview">-->
-  <!--<img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">-->
-  <!--</div>-->
-  <!--<div class="date">-->
-  <!--Date: MM-DD-YYYY-->
-  <!--</div>-->
-  <!--</div>-->
 
   <div class="normal-container hide">
     <div class="title">Title</div>
@@ -82,26 +77,27 @@
       </button>
     </div>
   </div>
+  <% if(user) { %>
+    <div class="chat hide">
+      <div class="chat-heading">CHAT</div>
+      <div class="message-feed">
+        <div class="message">
+          <p><em>Some guy on MM-DD-YYYY</em></p>
+          <h1>Message</h1>
+          <p class="message-content">Some stuff</p>
+        </div>
+      </div>
 
-  <div class="chat hide">
-    <div class="chat-heading">CHAT</div>
-    <div class="message-feed">
-      <div class="message">
-        <p><em>Some guy on MM-DD-YYYY</em></p>
-        <h1>Message</h1>
-        <p class="message-content">Some stuff</p>
+      <div class="text-field">
+        <textarea rows="3" cols="20" placeholder="Type your text here!"></textarea>
+        <div class="submit">
+          <button class="action-button submit-button">
+            SUBMIT
+          </button>
+        </div>
       </div>
     </div>
-
-    <div class="text-field">
-      <textarea rows="3" cols="20" placeholder="Type your text here!"></textarea>
-      <div class="submit">
-        <button class="action-button submit-button">
-          SUBMIT
-        </button>
-      </div>
-    </div>
-  </div>
+  <% } else {} %>
 
 </section>
 
@@ -115,7 +111,13 @@
       <input id="new-card-title" placeholder="Enter the title">
     </div>
     <div class="author">
-      <label>Some guy on MM-DD-YYYY</label>
+      <% if(user) { %>
+      <label>Author: <%=user.username%></label>
+      <% }
+      else { %>
+      <label>Author</label>
+      <% }
+      %>
     </div>
     <div class="tags" id = "new-card-tags">
       <input id="add-tag" placeholder="Add a tag...">

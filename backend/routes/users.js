@@ -1,6 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/users');
+var session = require('client-sessions');
+
+router.use(session({
+  cookieName: 'session',
+  secret: ';aldksghjf',
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000,
+}));
 
 /* GET users listing. */
 router.get('/', function(req, res, callback) {
@@ -44,28 +52,27 @@ router.post('/register', function(req, res) {
 });
 
 router.post('/login', function(req, res) {
-
   console.log(req.body);
-  User.find({email: req.body.email}, function(err, user) {
-    var params={
-      status: false
-    }
-    if (err) {
-      console.log(err);
-    } else {
-        if (user[0].password != req.body.password) {
-          console.log('Error! Incorrect email or password');
+  User.findOne({ email: req.body.email }, function(err, user) {
+      if (!user) {
+        res.redirect('/');
+        console.log('Incorrect email');
+      } else {
+        if (req.body.password === user.password) {
+          // sets a cookie with the user's info
+          req.session.user = user;
+          res.redirect('/');
+        } else {
+          console.log('Incorrect password', req.body.passsword);
         }
-        else
-        {
-          params.status = true;
-          console.log('User is now logged in');
-        }
-    }
+      }
+    });
+});
 
-    res.render('login', params);
 
-  });
+router.get('/logout', function(req, res) {
+  req.session.reset();
+  res.redirect('/');
 });
 
 
