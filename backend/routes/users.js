@@ -3,13 +3,6 @@ var router = express.Router();
 var User = require('../models/users');
 var session = require('client-sessions');
 
-router.use(session({
-  cookieName: 'session',
-  secret: ';aldksghjf',
-  duration: 30 * 60 * 1000,
-  activeDuration: 5 * 60 * 1000,
-}));
-
 /* GET users listing. */
 router.get('/', function(req, res, callback) {
   console.log(req.body);

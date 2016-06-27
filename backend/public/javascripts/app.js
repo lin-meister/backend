@@ -17,6 +17,7 @@ $(document).ready(function() {
     var previewcontainer = $('.preview-container');
     var normalcontainer = $('.normal-container');
     var counter = 0;
+    var socket = io.connect('http://localhost:8080'); // Make it connect to port 8080 instead because that is where socket.io is located
 
     /*Time stuff*/
     var d = new Date();
@@ -29,6 +30,7 @@ $(document).ready(function() {
 
     // Function that adds preview card
     var addPreviewCard = function (card) {
+        console.log(card);
         // Create the holding container
         var container = $('<div/>');
         container.addClass('preview-container');
@@ -45,13 +47,15 @@ $(document).ready(function() {
         // Create author
         var author = $('<div/>');
         author.addClass('author');
-        author.text('Author'); // Will be made to user's id
+        if (card.author != null)
+            author.text(card.author.name); // Will be made to user's id
 
         // Create tags
         var tags = $('<div/>');
         tags.addClass('tags');
 
         // Append the tags
+        console.log(card.tags);
         for (var j = 0; j < card.tags.length; j++) {
             var tag = $('<label>');
             tag.text(card.tags[j]);
@@ -74,7 +78,7 @@ $(document).ready(function() {
         // Create the date
         var date = $('<div/>');
         date.addClass('date');
-        date.text(dateFormat);
+        date.text(card.createdAt);
 
         // Append the elements to construct the container
         container.append(title);
@@ -86,11 +90,65 @@ $(document).ready(function() {
 
         counter++;
 
-        // Append the container to the main section to display it
-        // $('#main-section').append(container);
-
         return container;
     }
+
+    // Adds message card
+    var addMessageCard = function (msg) {
+        var message = $('<div/>');
+        message.addClass('message');
+
+        var dateCreated = $('<p>');
+        dateCreated.text(msg.createdAt);
+
+        var heading = $('<h1>');
+        heading.text("Message");
+
+        var content = $('<p>');
+        content.addClass('message-content');
+        content.text(msg.body);
+
+        message.append(dateCreated);
+        message.append(heading);
+        message.append(content);
+
+        return message;
+    };
+
+    // Load and render the cards on the server
+    var render = function() {
+        $.ajax({
+            url: "http://localhost:3000/api",
+            type: "GET",
+            success: function (response) {
+                console.log(response.data);
+                response.data.map(function (card) {
+                    $('#main-section').append(addPreviewCard(card));
+                });
+                cards.push(response);
+            }
+        });
+    }
+
+    var renderMessages = function() {
+        $.ajax({
+            url: "http://localhost:3000/messages",
+            type: "GET",
+            success: function (response) {
+                socket.emit('connected', response.data.body);
+
+                // Append every message to the message feed
+                socket.on('connected', function(msg) {
+                    response.data.map(function(msg) {
+                        $('.message-feed').append(addMessageCard(msg));
+                    });
+                });
+            }
+        });
+    }
+
+    render();
+    renderMessages();
 
     // Click on register
     $('#top .register').on('click', function() {
@@ -107,20 +165,29 @@ $(document).ready(function() {
         $('#main-section').addClass('darken');
     });
 
-    $('#top .search-button').on('click', function() {
+    $('#top .search-bar').on('keyup', function() {
         console.log('Searching for something!');
         var criteria = $('#top .search-bar').val();
-        $.ajax({
-            url: "http://localhost:3000/api/search",
-            data: {
-                criteria: criteria
-            },
-            type: "GET",
-            traditional: true,
-            success: function (response) {
-                $('#main-section').append(response);
-            }
-        });
+
+        if (criteria.length < 3) return; // Mongo does not accept text queries of less than 3
+        else {
+            $('#main-section').empty();
+            $.ajax({
+                url: "http://localhost:3000/api/search",
+                data: {
+                    title: criteria
+                },
+                type: "GET",
+                traditional: true,
+                success: function (response) {
+                    console.log(response.data);
+                    response.data.map(function(card) {
+                        $('#main-section').append(addPreviewCard(card));
+                    });
+                }
+            });
+        }
+
     });
 
     // Adding a new card, brings up edit container
@@ -139,24 +206,21 @@ $(document).ready(function() {
             var newCardNotes = document.querySelector('#new-card-notes').value;
             var newCardObj = {
                 title: newCardTitle,
-                notes: newCardNotes,
+                body: newCardNotes,
                 tags: tagHolder
             };
 
-            cards.push(newCardObj);
+            cards[0].data.push(newCardObj);
             console.log('New card created!');
 
             $.ajax({
                 url: "http://localhost:3000/api",
-                data: {
-                    title: newCardTitle,
-                    body: newCardNotes,
-                    tags: newCardObj.tags
-                },
+                data: newCardObj,
                 type: "POST",
                 traditional: true,
                 success: function (response) {
-                    $('#main-section').append(response);
+                    console.log(response.data);
+                    $('#main-section').append(addPreviewCard(response.data));
                 }
             });
 
@@ -190,6 +254,7 @@ $(document).ready(function() {
                     clearEditContainerContent();
                     editcontainer.addClass('hide');
 
+                    tagHolder = [];
                     // Remove the modal
                     $('#main-section').removeClass('darken');
 
@@ -209,9 +274,9 @@ $(document).ready(function() {
             console.log('Adding a new tag!');
             var card = {};
 
-            for (var i = 0; i < cards.length; i++) {
-                if (editcontainer.id = cards[i]._id) {
-                    card = cards[i];
+            for (var i = 0; i < cards[0].data.length; i++) {
+                if (editcontainer.id = cards[0].data[i]._id) {
+                    card = cards[0].data[i];
                 }
             }
 
@@ -230,9 +295,9 @@ $(document).ready(function() {
         console.log('Removed a tag!');
         var card = {};
 
-        for (var i = 0; i < cards.length; i++) {
-            if (editcontainer.id = cards[i]._id) {
-                card = cards[i];
+        for (var i = 0; i < cards[0].data.length; i++) {
+            if (editcontainer.id = cards[0].data[i]._id) {
+                card = cards[0].data[i];
             }
         }
 
@@ -244,27 +309,6 @@ $(document).ready(function() {
         // if (tagHolder.indexOf(this) > -1)
     });
 
-    // Adds message card
-    var addMessageCard = function (messageContent) {
-        var message = $('<div/>');
-        message.addClass('message');
-
-        var heading = $('<h1>');
-        heading.text("Message");
-
-        var content = $('<p>');
-        content.addClass('message-content');
-        content.text(messageContent);
-
-        message.append(heading);
-        message.append(content)
-
-        console.log(message);
-
-        $('.message-feed').prepend(message);
-
-    };
-
     // Clears edit container content
     var clearEditContainerContent = function () {
         document.querySelector('#new-card-title').value = "";
@@ -273,16 +317,6 @@ $(document).ready(function() {
         tagHolder = [];
         console.log('Card cleared!');
     }
-
-    // Load and render the cards on the server
-    $.ajax({
-        url: "http://localhost:3000/api",
-        type: "GET",
-        success: function (response) {
-            $('#main-section').append(response);
-            // cards.push(response);
-        }
-    });
 
     // Click on preview container to bring up the full normal containers
     $('#main-section').on('click', '.preview-container', function () {
@@ -358,13 +392,14 @@ $(document).ready(function() {
     $('#normal-section').on('click', '.normal-container .delete-button', function () {
         console.log(idHolder);
         var idToDelete = idHolder;
-        // console.log($('#idToDelete').classList);
         $.ajax({
             url: "http://localhost:3000/api/" + idToDelete,
             type: "DELETE",
             success: function(response) {
                 console.log("Card deleted!");
                 $('#' + idToDelete).remove();
+                idHolder = '';
+                tagHolder = [];
             },
         })
 
@@ -382,15 +417,19 @@ $(document).ready(function() {
         var title;
         var tags;
         var notes;
-        for (var i = 0; i < cards.length; i++) {
-            if (cards[i]._id === idHolder) {
-                title = cards[i].title;
-                tags = cards[i].tags;
+
+        for (var i = 0; i < cards[0].data.length; i++) {
+            if (cards[0].data[i]._id === idHolder) {
+                console.log((cards[0].data)[i]);
+
+                title = (cards[0].data)[i].title;
+                tags = (cards[0].data)[i].tags;
                 console.log(tags);
-                notes = cards[i].body;
+                notes = (cards[0].data)[i].body;
                 break;
             }
         }
+
         console.log(title);
         console.log(tags);
         console.log(notes);
@@ -398,7 +437,7 @@ $(document).ready(function() {
         $('#new-card-title').val(title);
         $('#new-card-title').attr('value', title);
 
-        for (var i = 0; i < tags.length; i++) {
+        for (var i = tags.length - 1; i >= 0; i--) {
             var tag = $('<label>');
             tag.text(tags[i]);
             console.log(tag);
@@ -451,9 +490,27 @@ $(document).ready(function() {
 
     // Submit messages to the chat
     $('.chat .text-field .submit-button').on('click', function () {
-        var content = document.querySelector('.chat textarea').value;
-        addMessageCard(content);
-        document.querySelector('.chat textarea').value = "";
-        console.log(content);
+        var body = document.querySelector('.chat textarea').value;
+        $.ajax({
+            url: "http://localhost:3000/messages",
+            data: {
+                title: 'Message',
+                body: body
+            },
+            type: "POST",
+            traditional: true,
+            success: function(response) {
+                // Broadcast the message
+                socket.emit('chat message', response.data.body);
+                document.querySelector('.chat textarea').value = "";
+                console.log(response.data);
+
+                // Append to the message feed after listening for the chat message event
+                socket.on('chat message', function(msg) {
+                    $('.message-feed').append(addMessageCard(response.data.body));
+                });
+            },
+        });
+        console.log(body);
     });
 });

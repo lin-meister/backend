@@ -22,8 +22,11 @@ router.get('/', function(req, res) {
                 console.log(err);
             } else {
                 console.log('done');
-
-                res.render('cardList', {cards});
+                // console.log(cards);
+                // res.render('cardList', {cards});
+                res.json ({
+                    data: cards
+                });
             }
         })
     }
@@ -35,18 +38,35 @@ router.get('/', function(req, res) {
 
 router.get('/search', function(req, res) {
     console.log('Searching right now!');
-    console.log(req.body);
+    var criteria = req.query.title;
+    
+    console.log(criteria);
+    // Search for entries whose title CONTAIN (INCLUDE) the criteria string
+    Card.find({$text: {$search: criteria}}, function (err, cards) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('done');
+            console.log(cards);
+
+            res.json({
+                data: cards
+            });
+        }
+    }).sort({title: 1});
 
 });
+
 router.post('/', function(req, res) {
     console.log(req.body);
     var card = new Card(
         {
             title: req.body.title,
             body: req.body.body,
+            tags: req.body.tags,
             author: {
                 id: req.user._id,
-                name: req.user.name
+                name: req.user.username
             }
         }
     );
@@ -58,7 +78,7 @@ router.post('/', function(req, res) {
 
             res.json({
                 data: card
-            })
+            });
         }
     });
 });
