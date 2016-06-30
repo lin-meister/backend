@@ -6,7 +6,7 @@ var schema = new Schema({
     body: String,
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     }
 });
 

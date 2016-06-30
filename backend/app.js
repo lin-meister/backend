@@ -80,14 +80,6 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-function requireLogin(req, res, next) {
-  if (!req.user) {
-    res.redirect('/login');
-  } else {
-    next();
-  }
-}
-
 // error handlers
 
 // development error handler

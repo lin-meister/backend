@@ -7,7 +7,7 @@ var schema = new Schema({
     password: String,
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     }
 });
 

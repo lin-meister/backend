@@ -3,7 +3,6 @@ var router = express.Router();
 var Card = require('../models/cards');
 var User = require('../models/users');
 var session = require('client-sessions');
-var textSearch = require('mongoose-text-search');
 
 router.use(session({
     cookieName: 'session',
@@ -22,8 +21,7 @@ router.get('/', function(req, res) {
                 console.log(err);
             } else {
                 console.log('done');
-                // console.log(cards);
-                // res.render('cardList', {cards});
+
                 res.json ({
                     data: cards
                 });
@@ -103,7 +101,6 @@ router.delete('/:id', function(req, res) {
 router.patch('/:id', function(req, res) {
     console.log(req.body);
     console.log(req.params);
-    var card;
     Card.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true}, function(err, card) {
         if (err) {
             console.log(err);

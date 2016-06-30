@@ -16,102 +16,53 @@ $(document).ready(function() {
     var editcontainer = $('.edit-container');
     var previewcontainer = $('.preview-container');
     var normalcontainer = $('.normal-container');
+    var mainsection = $('#main-section');
+    var normalsection = $('#normal-section');
     var counter = 0;
     var socket = io.connect('http://localhost:8080'); // Make it connect to port 8080 instead because that is where socket.io is located
 
-    /*Time stuff*/
-    var d = new Date();
-    var month = (d.getMonth() + 1) + "";
-    if (month.length === 1) month = "0" + month;
-    var day = d.getDate() + "";
-    if (day.length === 1) day = "0" + day;
-
-    var dateFormat = (month) + "-" + day + "-" + d.getFullYear();
-
     // Function that adds preview card
     var addPreviewCard = function (card) {
-        console.log(card);
-        // Create the holding container
-        var container = $('<div/>');
-        container.addClass('preview-container');
-        container.attr('id', card._id);
-
-        // Create the title. If title is not filled out by user set as Untitled
-        var title = $('<div/>');
-        title.addClass('title');
+        var title;
         if (card.title === "")
-            title.text("Untitled");
+            title = "Untitled";
         else
-            title.text(card.title);
+            title = card.title;
 
-        // Create author
-        var author = $('<div/>');
-        author.addClass('author');
-        if (card.author != null)
-            author.text(card.author.name); // Will be made to user's id
-
-        // Create tags
-        var tags = $('<div/>');
-        tags.addClass('tags');
-
-        // Append the tags
-        console.log(card.tags);
-        for (var j = 0; j < card.tags.length; j++) {
-            var tag = $('<label>');
-            tag.text(card.tags[j]);
-            tags.append(tag);
+        var tags = '';
+        for (var i = 0; i < card.tags.length; i++) {
+            var tag = `<label>${card.tags[i]}</label>`;
+            tags += tag;
         }
 
-        // Create the textfield that contains all the notes
-        var textField = $('<div/>');
-        textField.addClass('text-field');
-        var notes = $('<p>');
-        notes.text(card.body);
-        textField.append(notes);
-
-        // Preview image, add later
-        var preview = $('<div/>');
-        preview.addClass('preview hide');
-        var previewImage = $('<img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png"/>');
-        preview.append(previewImage);
-
-        // Create the date
-        var date = $('<div/>');
-        date.addClass('date');
-        date.text(card.createdAt);
-
-        // Append the elements to construct the container
-        container.append(title);
-        container.append(author);
-        container.append(tags);
-        container.append(textField);
-        container.append(preview);
-        container.append(date);
-
-        counter++;
+        var container = `<div class="preview-container" id="${card._id}">
+            <div class="title">
+                ${card.title === "" ? "Untitled" : card.title}
+            </div>
+            <div class="author">
+                ${card.author === undefined ? "" : card.author.name}
+            </div>
+            <div class="tags">
+                ${tags}
+            </div>
+            <div class="text-field">
+                <p>${card.body}</p>     
+            </div>
+            <div class="date">
+                 ${moment(card.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
+            </div>
+        </div>`
 
         return container;
     }
 
     // Adds message card
     var addMessageCard = function (msg) {
-        var message = $('<div/>');
-        message.addClass('message');
-
-        var dateCreated = $('<p>');
-        dateCreated.text(msg.createdAt);
-
-        var heading = $('<h1>');
-        heading.text("Message");
-
-        var content = $('<p>');
-        content.addClass('message-content');
-        content.text(msg.body);
-
-        message.append(dateCreated);
-        message.append(heading);
-        message.append(content);
-
+        var message = `<div class = "message">
+            <p>${moment(msg.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</p>
+            <h1>Message</h1>
+            <p class = "message-content">${msg.body}</p>
+        </div>`
         return message;
     };
 
@@ -123,7 +74,7 @@ $(document).ready(function() {
             success: function (response) {
                 console.log(response.data);
                 response.data.map(function (card) {
-                    $('#main-section').append(addPreviewCard(card));
+                    mainsection.append(addPreviewCard(card));
                 });
                 cards.push(response);
             }
@@ -155,14 +106,14 @@ $(document).ready(function() {
         console.log('Creating a new account!');
         $('#login-form').addClass('hide');
         $('#register-form').removeClass('hide');
-        $('#main-section').addClass('darken');
+        mainsection.addClass('darken');
     });
 
     $('#top .login').on('click', function() {
         console.log('Logging in!');
         $('#register-form').addClass('hide');
         $('#login-form').removeClass('hide');
-        $('#main-section').addClass('darken');
+        mainsection.addClass('darken');
     });
 
     $('#top .search-bar').on('keyup', function() {
@@ -171,7 +122,7 @@ $(document).ready(function() {
 
         if (criteria.length < 3) return; // Mongo does not accept text queries of less than 3
         else {
-            $('#main-section').empty();
+            mainsection.empty();
             $.ajax({
                 url: "http://localhost:3000/api/search",
                 data: {
@@ -182,7 +133,7 @@ $(document).ready(function() {
                 success: function (response) {
                     console.log(response.data);
                     response.data.map(function(card) {
-                        $('#main-section').append(addPreviewCard(card));
+                        mainsection.append(addPreviewCard(card));
                     });
                 }
             });
@@ -194,7 +145,7 @@ $(document).ready(function() {
     $('#add-card-button').on('click', function () {
         console.log('Adding a new card!');
         editcontainer.removeClass('hide');
-        $('#main-section').addClass('darken');
+        mainsection.addClass('darken');
     });
 
     // Upload and create cards
@@ -202,15 +153,14 @@ $(document).ready(function() {
         var container = $(this).parent().parent().parent()[0];
         var cardID = idHolder;
         if (cardID === '') {
-            var newCardTitle = document.querySelector('#new-card-title').value;
-            var newCardNotes = document.querySelector('#new-card-notes').value;
+            var newCardTitle = $('#new-card-title').val();
+            var newCardNotes = $('#new-card-notes').val();
             var newCardObj = {
                 title: newCardTitle,
                 body: newCardNotes,
                 tags: tagHolder
             };
 
-            cards[0].data.push(newCardObj);
             console.log('New card created!');
 
             $.ajax({
@@ -220,7 +170,8 @@ $(document).ready(function() {
                 traditional: true,
                 success: function (response) {
                     console.log(response.data);
-                    $('#main-section').append(addPreviewCard(response.data));
+                    mainsection.append(addPreviewCard(response.data));
+                    cards[0].data.push(response.data);
                 }
             });
 
@@ -231,12 +182,11 @@ $(document).ready(function() {
             clearEditContainerContent();
 
             // Remove the modal
-            $('#main-section').removeClass('darken');
+            mainsection.removeClass('darken');
         }
 
         else {
             var newTitle = $('#new-card-title')[0].value;
-            var newTags = tagHolder;
             var newNotes = $('#new-card-notes')[0].value;
             var idToPatch = cardID;
             console.log(idToPatch);
@@ -244,7 +194,7 @@ $(document).ready(function() {
                 url: "http://localhost:3000/api/" + idToPatch,
                 data: {
                     title: newTitle,
-                    tags: newTags,
+                    tags: tagHolder,
                     body: newNotes
                 },
                 type: "PATCH",
@@ -254,9 +204,10 @@ $(document).ready(function() {
                     clearEditContainerContent();
                     editcontainer.addClass('hide');
 
-                    tagHolder = [];
+                    // tagHolder = [];
+
                     // Remove the modal
-                    $('#main-section').removeClass('darken');
+                    mainsection.removeClass('darken');
 
                     var newPreview = addPreviewCard(response.data);
                     $('#' + idToPatch).replaceWith(newPreview);
@@ -277,16 +228,17 @@ $(document).ready(function() {
             for (var i = 0; i < cards[0].data.length; i++) {
                 if (editcontainer.id = cards[0].data[i]._id) {
                     card = cards[0].data[i];
+                    break;
                 }
             }
 
             var label = $('<label>');
-            label.text(document.querySelector('#add-tag').value);
-            tagHolder.push(document.querySelector('#add-tag').value);
-            card.tags.push(document.querySelector('#add-tag').value);
+            label.text($('#add-tag').val());
+            console.log($('#add-tag').val());
+            tagHolder.push($('#add-tag').val());
 
             $('#new-card-tags').prepend(label);
-            document.querySelector('#add-tag').value = "";
+            $.querySelector('#add-tag').val("");
         }
     });
 
@@ -298,98 +250,77 @@ $(document).ready(function() {
         for (var i = 0; i < cards[0].data.length; i++) {
             if (editcontainer.id = cards[0].data[i]._id) {
                 card = cards[0].data[i];
+                break;
             }
         }
 
         var index = tagHolder.indexOf(this.textContent);
         tagHolder.splice(index, 1);
-        index = card.tags.indexOf(this.textContent);
-        card.tags.splice(index, 1);
-        $(this).remove(); // Remove this tag only
-        // if (tagHolder.indexOf(this) > -1)
+        $(this).remove();
     });
 
     // Clears edit container content
     var clearEditContainerContent = function () {
-        document.querySelector('#new-card-title').value = "";
-        document.querySelector('#new-card-notes').value = "";
+        $('#new-card-title').val("");
+        $('#new-card-notes').val("");
         $('#new-card-tags label').remove();
         tagHolder = [];
         console.log('Card cleared!');
     }
 
     // Click on preview container to bring up the full normal containers
-    $('#main-section').on('click', '.preview-container', function () {
+    mainsection.on('click', '.preview-container', function () {
         idHolder = this.id;
-        var mainContainerTags = $(this).find('.tags')[0].children;
+        var title;
+        var author = '';
+        var mainContainerTags = '';
+        var tags = '';
+        var notes;
 
-        var container = $('<div/>');
-        container.addClass('normal-container');
-
-        var title = $('<div/>');
-        title.addClass('title');
-        title.attr('id', 'normal-container-title');
-        title.text($(this).find('.title')[0].textContent);
-
-        var author = $('<div/>');
-        author.addClass('author');
-        // Will change author text later
-        author.text($(this).find('.author')[0].textContent);
-
-        var tags = $('<div/>');
-        tags.addClass('tags');
-        for (var i = 0; i < mainContainerTags.length; i++) {
-            var tag = $('<label>');
-            tag.text(mainContainerTags[i].textContent);
-            tags.append(tag);
-            console.log(tag);
-            tagHolder.push(tag[0].textContent);
+        for (var i = 0; i < cards[0].data.length; i++) {
+            if (cards[0].data[i]._id === idHolder) {
+                title = (cards[0].data)[i].title;
+                if ((cards[0].data)[i].author != null) {
+                    author = (cards[0].data)[i].author.name;
+                }
+                mainContainerTags = (cards[0].data)[i].tags;
+                tagHolder = mainContainerTags;
+                notes = (cards[0].data)[i].body;
+                break;
+            }
         }
 
-        var exit = $('<div/>');
-        exit.addClass('exit');
-        var exitButton = $('<button>');
-        exitButton.addClass('exit-button');
-        exitButton.text('X');
-        exit.append(exitButton);
+        for (var i = 0; i < mainContainerTags.length; i++) {
+            var tag = `<label>${mainContainerTags[i]}</label>`;
+            tags += tag;
+        }
 
-        var textField = $('<div/>');
-        textField.addClass('text-field');
-        var notes = $('<p>');
-        notes.addClass('notes');
-        notes.text($(this).find('.text-field')[0].textContent);
-        textField.append(notes);
+        var container = `<div class = "normal-container">
+            <div class="title" id="normal-container-title">${title}</div>
+            <div class="author">${author}</div>
+            <div class="tags">
+                ${tags}
+            </div>
+            <div class="exit">
+                <button class="exit-button">X</button>
+            </div>
+            <div class="text-field">
+                <p class = "notes">${notes}</p>
+            </div>
+            <div class = "button-list">
+                <button class = "action-button download-button">DOWNLOAD</button>
+                <button class = "action-button edit-button">EDIT</button>
+                <button class = "action-button delete-button">DELETE</button>
+            </div>
+        </div>`
 
-        var buttons = $('<div/>');
-        buttons.addClass('button-list');
-        var downloadButton = $('<button>');
-        downloadButton.addClass('action-button download-button');
-        downloadButton.text('DOWNLOAD');
-        var editButton = $('<button>');
-        editButton.addClass('action-button edit-button');
-        editButton.text('EDIT');
-        var deleteButton = $('<button>');
-        deleteButton.addClass('action-button delete-button');
-        deleteButton.text('DELETE');
-
-        buttons.append(downloadButton);
-        buttons.append(editButton);
-        buttons.append(deleteButton);
-
-        container.append(title);
-        container.append(author);
-        container.append(tags);
-        container.append(textField);
-        container.append(exit);
-        container.append(buttons);
-
-        $('#normal-section').append(container);
-        $('#normal-section').removeClass('hide');
-        $('#main-section').addClass('darken');
+        normalsection.append(container);
+        normalsection.removeClass('hide');
+        mainsection.addClass('darken');
     });
 
     // Normal container delete the card, removes the preview container
-    $('#normal-section').on('click', '.normal-container .delete-button', function () {
+    normalsection.on('click', '.normal-container .delete-button', function () {
         console.log(idHolder);
         var idToDelete = idHolder;
         $.ajax({
@@ -404,16 +335,16 @@ $(document).ready(function() {
         })
 
         normalcontainer.addClass('hide');
-        $('#normal-section').empty();
-        $('#main-section').removeClass('darken');
+        normalsection.empty();
+        mainsection.removeClass('darken');
     });
 
     // Normal container edit the card, brings up edit container
-    $('#normal-section').on('click', '.normal-container .edit-button', function () {
+    normalsection.on('click', '.normal-container .edit-button', function () {
         editcontainer.removeClass('hide');
-        $('#main-section').addClass('darken');
-        $('#normal-section').empty();
-        $('#normal-section').addClass('hide');
+        mainsection.addClass('darken');
+        normalsection.empty();
+        normalsection.addClass('hide');
         var title;
         var tags;
         var notes;
@@ -449,48 +380,48 @@ $(document).ready(function() {
     });
 
     // Normal container exit button
-    $('#normal-section').on('click', '.normal-container .exit-button', function() {
+    normalsection.on('click', '.normal-container .exit-button', function() {
         idHolder = '';
-        $('#normal-section').empty();
-        $('#normal-section').addClass('hide');
-        $('#main-section').removeClass('darken');
+        normalsection.empty();
+        normalsection.addClass('hide');
+        mainsection.removeClass('darken');
     });
 
     $('.edit-container .exit-button').on('click', function () {
         console.log('Done with the card!');
         editcontainer.addClass('hide');
         clearEditContainerContent();
-        $('#normal-section').empty();
-        $('#normal-section').addClass('hide');
+        normalsection.empty();
+        normalsection.addClass('hide');
         idHolder = '';
-        $('#main-section').removeClass('darken');
+        mainsection.removeClass('darken');
     });
 
     $('.edit-container .cancel-button').on('click', function () {
         console.log('Done with the card!');
         editcontainer.addClass('hide');
         clearEditContainerContent();
-        $('#normal-section').empty();
-        $('#normal-section').addClass('hide');
+        normalsection.empty();
+        normalsection.addClass('hide');
         idHolder = '';
-        $('#main-section').removeClass('darken');
+        mainsection.removeClass('darken');
     });
 
     $('#register-form .exit-button').on('click', function () {
         console.log('Done with registering');
         $('#register-form').addClass('hide');
-        $('#main-section').removeClass('darken');
+        mainsection.removeClass('darken');
     });
 
     $('#login-form .exit-button').on('click', function () {
         console.log('Done with logging in!');
         $('#login-form').addClass('hide');
-        $('#main-section').removeClass('darken');
+        mainsection.removeClass('darken');
     });
 
     // Submit messages to the chat
     $('.chat .text-field .submit-button').on('click', function () {
-        var body = document.querySelector('.chat textarea').value;
+        var body = $('.chat textarea').val();
         $.ajax({
             url: "http://localhost:3000/messages",
             data: {
@@ -502,12 +433,12 @@ $(document).ready(function() {
             success: function(response) {
                 // Broadcast the message
                 socket.emit('chat message', response.data.body);
-                document.querySelector('.chat textarea').value = "";
+                $('.chat textarea').val("");
                 console.log(response.data);
 
                 // Append to the message feed after listening for the chat message event
                 socket.on('chat message', function(msg) {
-                    $('.message-feed').append(addMessageCard(response.data.body));
+                    $('.message-feed').append(addMessageCard(response.data));
                 });
             },
         });

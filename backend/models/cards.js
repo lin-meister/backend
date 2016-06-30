@@ -10,7 +10,7 @@ var schema = new Schema({
     author: Object,
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     }
 });
 
