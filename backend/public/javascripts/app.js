@@ -67,7 +67,8 @@ $(document).ready(function() {
         var message = `<div class = "message">
             <p class = "message-description"><em>${author + ' on ' + moment(msg.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</em></p>
             <p class = "message-content"><strong>${msg.body}</strong></p>
-        </div>`
+            </div>`
+
         return message;
     };
 
@@ -86,6 +87,7 @@ $(document).ready(function() {
         });
     }
 
+    // Load and render the messages on the server
     var renderMessages = function() {
         $.ajax({
             url: "http://localhost:3000/messages",
@@ -425,7 +427,7 @@ $(document).ready(function() {
     });
 
     // Submit messages to the chat
-    $('#chat .text-field .submit-button').on('click', function () {
+    $('#chat .submit-button').on('click', function () {
         var body = $('#chat textarea').val();
         console.log(body);
 
@@ -438,15 +440,17 @@ $(document).ready(function() {
             traditional: true,
             success: function(response) {
                 // Broadcast the message
-                socket.emit('chat message', response.data.body);
+                socket.emit('chat message', response.data);
                 $('#chat textarea').val("");
                 console.log(response.data);
                 // Append to the message feed after listening for the chat message event
-                socket.on('chat message', function(msg) {
-                    console.log(addMessageCard(response.data));
-                    $('#message-feed').append(addMessageCard(response.data));
-                });
             },
         });
     });
-});
+
+    socket.on('chat message', function(msg) {
+        console.log(addMessageCard(msg));
+        $('#message-feed').append(addMessageCard(msg));
+    });
+
+ });
