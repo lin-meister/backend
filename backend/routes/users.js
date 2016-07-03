@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/users');
-var session = require('client-sessions');
 
 /* GET users listing. */
 router.get('/', function(req, res, callback) {

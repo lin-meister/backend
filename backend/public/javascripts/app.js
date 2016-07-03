@@ -15,10 +15,9 @@ var idHolder = '';
 $(document).ready(function() {
     var editcontainer = $('.edit-container');
     var previewcontainer = $('.preview-container');
-    var normalcontainer = $('.normal-container');
+    var normalcontainer = $('#normal-container');
     var mainsection = $('#main-section');
     var normalsection = $('#normal-section');
-    var counter = 0;
     var socket = io.connect('http://localhost:8080'); // Make it connect to port 8080 instead because that is where socket.io is located
 
     // Function that adds preview card
@@ -58,10 +57,16 @@ $(document).ready(function() {
 
     // Adds message card
     var addMessageCard = function (msg) {
+        var author = '';
+        if (msg.author != null) {
+            author = msg.author.name;
+        }
+        else {
+            author = 'Somebody';
+        }
         var message = `<div class = "message">
-            <p>${moment(msg.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</p>
-            <h1>Message</h1>
-            <p class = "message-content">${msg.body}</p>
+            <p class = "message-description"><em>${author + ' on ' + moment(msg.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</em></p>
+            <p class = "message-content"><strong>${msg.body}</strong></p>
         </div>`
         return message;
     };
@@ -91,7 +96,7 @@ $(document).ready(function() {
                 // Append every message to the message feed
                 socket.on('connected', function(msg) {
                     response.data.map(function(msg) {
-                        $('.message-feed').append(addMessageCard(msg));
+                        $('#message-feed').append(addMessageCard(msg));
                     });
                 });
             }
@@ -295,7 +300,7 @@ $(document).ready(function() {
             tags += tag;
         }
 
-        var container = `<div class = "normal-container">
+        var container = `<div id = "normal-container">
             <div class="title" id="normal-container-title">${title}</div>
             <div class="author">${author}</div>
             <div class="tags">
@@ -320,7 +325,7 @@ $(document).ready(function() {
     });
 
     // Normal container delete the card, removes the preview container
-    normalsection.on('click', '.normal-container .delete-button', function () {
+    normalsection.on('click', '#normal-container .delete-button', function () {
         console.log(idHolder);
         var idToDelete = idHolder;
         $.ajax({
@@ -340,7 +345,7 @@ $(document).ready(function() {
     });
 
     // Normal container edit the card, brings up edit container
-    normalsection.on('click', '.normal-container .edit-button', function () {
+    normalsection.on('click', '#normal-container .edit-button', function () {
         editcontainer.removeClass('hide');
         mainsection.addClass('darken');
         normalsection.empty();
@@ -380,7 +385,7 @@ $(document).ready(function() {
     });
 
     // Normal container exit button
-    normalsection.on('click', '.normal-container .exit-button', function() {
+    normalsection.on('click', '#normal-container .exit-button', function() {
         idHolder = '';
         normalsection.empty();
         normalsection.addClass('hide');
@@ -420,12 +425,13 @@ $(document).ready(function() {
     });
 
     // Submit messages to the chat
-    $('.chat .text-field .submit-button').on('click', function () {
-        var body = $('.chat textarea').val();
+    $('#chat .text-field .submit-button').on('click', function () {
+        var body = $('#chat textarea').val();
+        console.log(body);
+
         $.ajax({
             url: "http://localhost:3000/messages",
             data: {
-                title: 'Message',
                 body: body
             },
             type: "POST",
@@ -433,15 +439,14 @@ $(document).ready(function() {
             success: function(response) {
                 // Broadcast the message
                 socket.emit('chat message', response.data.body);
-                $('.chat textarea').val("");
+                $('#chat textarea').val("");
                 console.log(response.data);
-
                 // Append to the message feed after listening for the chat message event
                 socket.on('chat message', function(msg) {
-                    $('.message-feed').append(addMessageCard(response.data));
+                    console.log(addMessageCard(response.data));
+                    $('#message-feed').append(addMessageCard(response.data));
                 });
             },
         });
-        console.log(body);
     });
 });

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <title>Title</title>
+  <title>Lazy Students App</title>
   <link rel="stylesheet" href="stylesheets/stylesheet_light.css">
   <link href='https://fonts.googleapis.com/css?family=Product+Sans' rel='stylesheet' type='text/css'>
   <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
@@ -8,11 +8,15 @@
   <script src="http://momentjs.com/downloads/moment.min.js"></script>
 </head>
 <body>
+
+<!-- Navigation bar-->
 <nav id="top">
-  <button>Logo</button>
+  <button>Lazy Students App</button>
   <button><a href="/">Home</a></button>
   <button><a href="about.html">About</a></button>
   <div class="search">
+    <!-- EJS. If the user is logged in, display a welcome back message with their username, and an option to log out.
+    If they are not, display buttons to register/login-->
     <% if(user) {} else { %>
       <button class="register">Register</button>
     <% } %>
@@ -29,66 +33,26 @@
   </div>
 </nav>
 
+<!-- Main section where all the preview cards will be in-->
 <section id="main-section">
+  <!-- The cards will display only if the user is logged in-->
   <% if(user) { %>
-    <div class="add-card-div">
-      <button id="add-card-button">+ ADD CARD</button>
-    </div>
+  <div class="add-card-div">
+    <button id="add-card-button">+ ADD CARD</button>
+  </div>
   <% } else {}%>
+</section>
 
-  <div class="preview-container hide">
-    <div class="title">Title</div>
-    <div class="author">Some guy</div>
-    <div class="tags">
-      <label>tag1</label>
-      <label>tag2</label>
-    </div>
-    <div class="preview">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-    </div>
-    <div class="date">
-      Date: MM-DD-YYYY
-    </div>
-  </div>
-
-  <div class="normal-container hide">
-    <div class="title">Title</div>
-    <div class="author">Some guy on MM-DD-YYYY</div>
-    <div class="tags">
-      <label>tag1</label>
-      <label>tag2</label>
-    </div>
-    <div class="exit">
-      <button class="exit-button">X</button>
-    </div>
-    <div class="text-field">
-      <p></p>
-    </div>
-    <div class="preview-box">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-    </div>
-    <div class="download">
-      <button class="action-button download-button">
-        DOWNLOAD
-      </button>
-    </div>
-  </div>
+<section id="chat-section">
   <% if(user) { %>
-    <div class="chat hide">
-      <div class="chat-heading">CHAT</div>
-      <div class="message-feed">
+    <div id="chat">
+      <div id="chat-heading">CHAT</div>
+      <div id="message-feed">
         <div class="message">
           <h1>Message</h1>
           <p class="message-content">Some stuff</p>
         </div>
       </div>
-
       <div class="text-field">
         <textarea rows="3" cols="20" placeholder="Type your text here!"></textarea>
         <div class="submit">
@@ -99,7 +63,6 @@
       </div>
     </div>
   <% } else {} %>
-
 </section>
 
 <section id="normal-section">
@@ -179,6 +142,8 @@
     <input type="submit" value="LOG IN">
   </form>
 </section>
+
 <script src="javascripts/app.js"></script>
+
 </body>
 </html>

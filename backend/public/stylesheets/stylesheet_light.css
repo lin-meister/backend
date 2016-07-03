@@ -189,7 +189,6 @@ img {
     right: 0;
     bottom: 0;
     display: block;
-    /*background-color: dodgerblue;*/
     color: white;
     text-align: right;
     border-top: thin solid white;
@@ -198,7 +197,7 @@ img {
 }
 
 /* Normal containers */
-.normal-container {
+#normal-container {
     position: fixed;
     background-color: transparent;
     height: auto;
@@ -372,7 +371,7 @@ img {
     margin: 10px;
 }
 
-.chat {
+#chat {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -386,14 +385,14 @@ img {
     z-index: 1;
 }
 
-.chat-heading {
+#chat-heading {
     font-size: 36px;
     padding: 10px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     /*Shadow*/
 }
 
-.message-feed {
+#message-feed {
     flex-grow: 1;
     background-color: transparent;
     color: white;
@@ -413,12 +412,16 @@ img {
     margin: 5px;
 }
 
-.chat .text-field {
+.message .message-description {
+    font-size: 12px;
+}
+
+#chat .text-field {
     background-color: transparent;
     text-align: center;
 }
 
-.chat textarea {
+#chat textarea {
     background-color: transparent;
     color: white;
 }

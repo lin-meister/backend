@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-    title: String,
     body: String,
+    author: Object,
     createdAt: {
         type: Date,
         default: Date.now()

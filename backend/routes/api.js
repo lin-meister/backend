@@ -1,15 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Card = require('../models/cards');
-var User = require('../models/users');
-var session = require('client-sessions');
 
-router.use(session({
-    cookieName: 'session',
-    secret: ';aldksghjf',
-    duration: 30 * 60 * 1000,
-    activeDuration: 5 * 60 * 1000,
-}));
 /* GET home page. */
 
 router.get('/', function(req, res) {
