@@ -7,138 +7,138 @@
   <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
   <script src="http://momentjs.com/downloads/moment.min.js"></script>
 </head>
+
 <body>
+  <!-- Navigation bar-->
+  <nav id="top">
+    <button>Lazy Students App</button>
+    <button><a href="/">Home</a></button>
+    <button><a href="/about">About</a></button>
+    <div class="search">
+      <!-- EJS. If the user is logged in, display a welcome back message with their username, and an option to log out.
+      If they are not, display buttons to register/login-->
+      <% if(user) {} else { %>
+        <button class="register">Register</button>
+      <% } %>
+      <% if(user) { %>
+        <button>Welcome back, <%=user.username%></button>
+        <button class="logout"><a href="/users/logout">Log Out</a></button>
+      <% }
+      else { %>
+        <button class="login">Log in</button>
+      <% }
+      %>
+      <input class="search-bar" type="text" placeholder="Search our website" required>
+    </div>
+  </nav>
 
-<!-- Navigation bar-->
-<nav id="top">
-  <button>Lazy Students App</button>
-  <button><a href="/">Home</a></button>
-  <button><a href="about.html">About</a></button>
-  <div class="search">
-    <!-- EJS. If the user is logged in, display a welcome back message with their username, and an option to log out.
-    If they are not, display buttons to register/login-->
-    <% if(user) {} else { %>
-      <button class="register">Register</button>
-    <% } %>
+  <!-- Main section where all the preview cards will be in-->
+  <section id="main-section">
+    <!-- The cards will display only if the user is logged in-->
     <% if(user) { %>
-      <button>Welcome back, <%=user.username%></button>
-      <button class="logout"><a href="/users/logout">Log Out</a></button>
-    <% }
-    else { %>
-      <button class="login">Log in</button>
-    <% }
-    %>
-    <input class="search-bar" type="text" placeholder="Search our website" required>
-    <button class="search-button">Search</button>
-  </div>
-</nav>
+    <div class="add-card-div">
+      <button id="add-card-button">+ ADD CARD</button>
+    </div>
+    <div id="preview-cards-div">
+    </div>
+    <% } else { %>
+      <div id="description">
+        <h1>A web app for the daydreamers and procrastinators</h1>
+        <p>Register or log in to get started.</p>
+      </div>
+    <%}%>
+  </section>
 
-<!-- Main section where all the preview cards will be in-->
-<section id="main-section">
-  <!-- The cards will display only if the user is logged in-->
-  <% if(user) { %>
-  <div class="add-card-div">
-    <button id="add-card-button">+ ADD CARD</button>
-  </div>
-  <% } else {}%>
-</section>
+  <section id="chat-section">
+    <% if(user) { %>
+      <div id="chat">
+        <div id="chat-heading">CHAT</div>
+        <div id="message-feed"></div>
+        <div class="text-field">
+          <textarea rows="3" cols="20" placeholder="Type your text here!"></textarea>
+          <div class="submit">
+            <button class="action-button submit-button">
+              SUBMIT
+            </button>
+          </div>
+        </div>
+      </div>
+    <% } else {} %>
+  </section>
 
-<section id="chat-section">
-  <% if(user) { %>
-    <div id="chat">
-      <div id="chat-heading">CHAT</div>
-      <div id="message-feed"></div>
+  <section id="normal-section">
+
+  </section>
+
+  <section id="edit-section">
+    <div class="edit-container hide">
+      <div class="title">
+        <input id="new-card-title" placeholder="Enter the title">
+      </div>
+      <div class="author">
+        <label id="new-card-author"></label>
+      </div>
+      <div class="tags" id = "new-card-tags">
+        <input id="add-tag" placeholder="Add a tag...">
+      </div>
+      <div class="exit">
+        <button class="exit-button">X</button>
+      </div>
       <div class="text-field">
-        <textarea rows="3" cols="20" placeholder="Type your text here!"></textarea>
-        <div class="submit">
-          <button class="action-button submit-button">
-            SUBMIT
+        <textarea id="new-card-notes" rows="10" cols="50" placeholder="Type your text here!"></textarea>
+      </div>
+      <div class="upload">
+        <button class="action-button upload-button">
+          UPLOAD A FILE
+        </button>
+      </div>
+
+      <hr>
+
+      <div class="save">
+        <div class="button-list">
+          <button class="action-button save-button">
+            SAVE
+          </button>
+          <button class="action-button cancel-button">
+            CANCEL
           </button>
         </div>
       </div>
     </div>
-  <% } else {} %>
-</section>
+  </section>
 
-<section id="normal-section">
-
-</section>
-
-<section id="edit-section">
-  <div class="edit-container hide">
-    <div class="title">
-      <input id="new-card-title" placeholder="Enter the title">
-    </div>
-    <div class="author">
-      <% if(user) { %>
-      <label>Author: <%=user.username%></label>
-      <% }
-      else { %>
-      <label>Author</label>
-      <% }
-      %>
-    </div>
-    <div class="tags" id = "new-card-tags">
-      <input id="add-tag" placeholder="Add a tag...">
-    </div>
-    <div class="exit">
-      <button class="exit-button">X</button>
-    </div>
-    <div class="text-field">
-      <textarea id="new-card-notes" rows="10" cols="50" placeholder="Type your text here!"></textarea>
-    </div>
-    <div class="upload">
-      <button class="action-button upload-button">
-        UPLOAD A FILE
-      </button>
-    </div>
-
-    <hr>
-
-    <div class="save">
-      <div class="button-list">
-        <button class="action-button save-button">
-          SAVE
-        </button>
-        <button class="action-button cancel-button">
-          CANCEL
-        </button>
+  <section id="user-section">
+    <form id="register-form" class="hide" method="post" action="http://localhost:3000/users/register">
+      <h1 class="title">Register an account</h1>
+      <div class="exit">
+        <button type="button" class="exit-button">X</button>
       </div>
-    </div>
-  </div>
-</section>
+      <hr>
+      <input type="text" name="name" placeholder="Username">
+      <br>
+      <input type="text" name="email" placeholder="Email address">
+      <br>
+      <input type="password" name="password" placeholder="Password">
+      <br>
+      <input type="submit" value="REGISTER">
+    </form>
 
-<section id="user-section">
-  <form id="register-form" class="hide" method="post" action="http://localhost:3000/users/register">
-    <h1 class="title">Register an account</h1>
-    <div class="exit">
-      <button type="button" class="exit-button">X</button>
-    </div>
-    <hr>
-    <input type="text" name="name" placeholder="Username">
-    <br>
-    <input type="text" name="email" placeholder="Email address">
-    <br>
-    <input type="password" name="password" placeholder="Password">
-    <br>
-    <input type="submit" value="REGISTER">
-  </form>
+    <form id="login-form" class="hide" method="post" action="http://localhost:3000/users/login">
+      <h1 class="title">Log in</h1>
+      <div class="exit">
+        <button type="button" class="exit-button">X</button>
+      </div>
+      <hr>
+      <input type="text" name="email" placeholder="Email address">
+      <br>
+      <input type="password" name="password" placeholder="Password">
+      <br>
+      <input type="submit" value="LOG IN">
+    </form>
+  </section>
 
-  <form id="login-form" class="hide" method="post" action="http://localhost:3000/users/login">
-    <h1 class="title">Log in</h1>
-    <div class="exit">
-      <button type="button" class="exit-button">X</button>
-    </div>
-    <hr>
-    <input type="text" name="email" placeholder="Email address">
-    <br>
-    <input type="password" name="password" placeholder="Password">
-    <br>
-    <input type="submit" value="LOG IN">
-  </form>
-</section>
+  <script src="javascripts/app.js"></script>
 
-<script src="javascripts/app.js"></script>
-
-</body>
+  </body>
 </html>

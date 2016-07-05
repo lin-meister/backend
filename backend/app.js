@@ -1,3 +1,8 @@
+// The entry point of the entire back-end. Routing requests are all passed through here first
+// to determine which routes they will go
+
+// Require function is provided by Node.js, loads modules and gives you access to their exports.
+// Module is a reusable collection for use, similar to a library
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -6,15 +11,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
+var api = require('./routes/api');
 var users = require('./routes/users');
 var messages = require('./routes/messages');
 var socketio = require('./socketio');
-var api = require('./routes/api');
 var cors = require('cors');
 var User = require('./models/users');
 
+// Create an instance of the express class to get access to express functionalities
 var app = express();
 
+// Using mongoose
 var mongoose = require('mongoose');
 var mongoURL = 'mongodb://localhost/lazyapp';
 mongoose.connect(mongoURL);
@@ -41,6 +48,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
+// Use a user session
 app.use(session({
   cookieName: 'session',
   secret: 'asdjklf;a;jra;lkjr',
@@ -48,6 +56,7 @@ app.use(session({
   activeDuration: 5 * 60 * 1000,
 }));
 
+// Set the request's user if it exists i.e. somebody is logged in
 app.use(function(req, res, next) {
   console.log('User is being set right now!');
   console.log(req.session)
@@ -68,12 +77,14 @@ app.use(function(req, res, next) {
   }
 });
 
+// Route and match URL requests to their specific files that will handle related requests
 app.use('/', routes);
+app.use('/about', routes);
 app.use('/api', api);
 app.use('/users', users);
 app.use('/messages', messages);
 
-// catch 404 and forward to error handler
+// catch 404 and forward to error handlerF
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;

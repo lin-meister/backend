@@ -91,7 +91,6 @@ input {
 .search-bar {
     background-color: transparent;
     color: white;
-    font-family: 'Product Sans',Arial,sans-serif;
     font-size: 20px;
     margin: 10px;
     /*border-radius: 25px;*/
@@ -110,9 +109,19 @@ input {
 /*Main section*/
 #main-section {
     padding: 50px 20px;
+    width: 80%;
 }
 
-/*jQuery stuff*/
+#description {
+    position: absolute;
+    color: white;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
 #add-card-button {
     height: 300px;
     width: 250px;
@@ -153,12 +162,10 @@ input {
 }
 
 .author {
-    padding-left: 10px;
-}
-
-.preview-container .author {
     color: white;
+    padding-left: 10px;
     margin-bottom: 10px;
+
 }
 
 .tags {
@@ -217,9 +224,7 @@ img {
 }
 
 .normal-container .author {
-    color: white;
     font-size: 20px;
-    margin-bottom: 10px;
 }
 
 .exit-button {
@@ -238,9 +243,9 @@ img {
 
 .text-field p {
     max-height: 150px;
-    border: thin dashed black;
-    overflow-y: scroll;
+    border: thin dashed white;
     padding: 10px;
+    overflow-y: scroll;
 }
 
 .preview-box {
@@ -254,7 +259,6 @@ img {
 
 .preview-box img {
     display: inline-block;
-    width: 30%;
     height: 150px;
     width: 100px;
 }
@@ -299,18 +303,15 @@ img {
 .edit-container {
     position: fixed;
     background-color: transparent;
-    opacity: 2;
     height: 600px;
     width: 500px;
     margin: 20px;
     border: thin solid white;
     top: 50%;
     left: 50%;
-
     -webkit-transform: translate(-50%,-50%);
     transform: translate(-50%,-50%);
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-    /*Shadow*/
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); /*Shadow*/
     z-index: 1;
 }
 
@@ -319,25 +320,16 @@ img {
 }
 
 .edit-container .author {
-    color: white;
     font-size: 20px;
-    margin-bottom: 10px;
 }
 
 .edit-container input {
     background-color: transparent;
-    color: dodgerblue;
-    font-family: 'Product Sans',Arial,sans-serif;
 }
 
 .edit-container .title input {
     color: white;
     font-size: 36px;
-}
-
-.edit-container .author input {
-    font-size: 16px;
-    max-width: 50px;
 }
 
 .edit-container .tags input {
@@ -404,8 +396,7 @@ img {
 .message {
     margin: 10px;
     border: thin solid white;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-    /*Shadow*/
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); /*Shadow*/
 }
 
 .message h1,p {
@@ -417,7 +408,6 @@ img {
 }
 
 #chat .text-field {
-    background-color: transparent;
     text-align: center;
 }
 
@@ -428,7 +418,6 @@ img {
 
 #user-section form {
     position: fixed;
-
     margin: 20px;
     border: thin solid white;
     top: 50%;

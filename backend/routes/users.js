@@ -38,7 +38,8 @@ router.post('/register', function(req, res) {
       console.log('done');
     }
 
-    res.render('register', params);
+    req.session.user = user;
+    res.redirect('/');
 
   });
 });

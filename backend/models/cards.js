@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var textSearch = require('mongoose-text-search');
 
+// Define the field and the data type it holds
 var schema = new Schema({
     title: String,
     body: String,

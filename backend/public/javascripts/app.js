@@ -14,7 +14,6 @@ var idHolder = '';
 
 $(document).ready(function() {
     var editcontainer = $('.edit-container');
-    var previewcontainer = $('.preview-container');
     var normalcontainer = $('#normal-container');
     var mainsection = $('#main-section');
     var normalsection = $('#normal-section');
@@ -72,6 +71,27 @@ $(document).ready(function() {
         return message;
     };
 
+    // Clears edit container content
+    var clearEditContainerContent = function () {
+        $('#add-tag').val("");
+        $('#new-card-title').val("");
+        $('#new-card-notes').val("");
+        $('#new-card-tags label').remove();
+        tagHolder = [];
+        console.log('Card cleared!');
+    }
+
+    // Hides the modal
+    var hideModal = function() {
+         console.log('Done with the card!');
+         editcontainer.addClass('hide');
+         clearEditContainerContent();
+         normalsection.empty();
+         normalsection.addClass('hide');
+         idHolder = '';
+         mainsection.removeClass('darken');
+     }
+
     // Load and render the cards on the server
     var render = function() {
         $.ajax({
@@ -80,7 +100,7 @@ $(document).ready(function() {
             success: function (response) {
                 console.log(response.data);
                 response.data.map(function (card) {
-                    mainsection.append(addPreviewCard(card));
+                    $('#preview-cards-div').append(addPreviewCard(card));
                 });
                 cards.push(response);
             }
@@ -105,6 +125,7 @@ $(document).ready(function() {
         });
     }
 
+    // Load the cards and messages on page load
     render();
     renderMessages();
 
@@ -116,6 +137,7 @@ $(document).ready(function() {
         mainsection.addClass('darken');
     });
 
+    // Click on login
     $('#top .login').on('click', function() {
         console.log('Logging in!');
         $('#register-form').addClass('hide');
@@ -123,13 +145,16 @@ $(document).ready(function() {
         mainsection.addClass('darken');
     });
 
+    // Search
     $('#top .search-bar').on('keyup', function() {
         console.log('Searching for something!');
         var criteria = $('#top .search-bar').val();
 
-        if (criteria.length < 3) return; // Mongo does not accept text queries of less than 3
+        // Return main section to full state when search field is cleared
+        if (criteria.length === 0) render();
+        else if (criteria.length < 3) return; // Mongo does not accept text queries of less than 3
         else {
-            mainsection.empty();
+            $('#preview-cards-div').empty();
             $.ajax({
                 url: "http://localhost:3000/api/search",
                 data: {
@@ -140,7 +165,7 @@ $(document).ready(function() {
                 success: function (response) {
                     console.log(response.data);
                     response.data.map(function(card) {
-                        mainsection.append(addPreviewCard(card));
+                        $('#preview-cards-div').append(addPreviewCard(card));
                     });
                 }
             });
@@ -155,10 +180,10 @@ $(document).ready(function() {
         mainsection.addClass('darken');
     });
 
-    // Upload and create cards
+    // Upload and create cards or edit them
     $('.edit-container .save-button').on('click', function () {
-        var container = $(this).parent().parent().parent()[0];
         var cardID = idHolder;
+        // If the card id is empty, means that this is adding not editing
         if (cardID === '') {
             var newCardTitle = $('#new-card-title').val();
             var newCardNotes = $('#new-card-notes').val();
@@ -177,7 +202,7 @@ $(document).ready(function() {
                 traditional: true,
                 success: function (response) {
                     console.log(response.data);
-                    mainsection.append(addPreviewCard(response.data));
+                    $('#preview-cards-div').append(addPreviewCard(response.data));
                     cards[0].data.push(response.data);
                 }
             });
@@ -192,6 +217,7 @@ $(document).ready(function() {
             mainsection.removeClass('darken');
         }
 
+        // Else then we are editing the card
         else {
             var newTitle = $('#new-card-title')[0].value;
             var newNotes = $('#new-card-notes')[0].value;
@@ -211,15 +237,19 @@ $(document).ready(function() {
                     clearEditContainerContent();
                     editcontainer.addClass('hide');
 
-                    // tagHolder = [];
-
                     // Remove the modal
                     mainsection.removeClass('darken');
 
+                    for (var i = 0; i < cards[0].data.length; i++) {
+                         if (cards[0].data[i]._id === idHolder) {
+                             cards[0].data[i].title = response.data.title;
+                             cards[0].data[i].tags = response.data.tags;
+                             cards[0].data[i].body = response.data.body;
+                         }
+                    }
                     var newPreview = addPreviewCard(response.data);
                     $('#' + idToPatch).replaceWith(newPreview);
                     idHolder = '';
-
                 },
             });
         }
@@ -230,14 +260,6 @@ $(document).ready(function() {
     $('#new-card-tags').on('keydown', function (event) {
         if (event.keyCode === 13) {
             console.log('Adding a new tag!');
-            var card = {};
-
-            for (var i = 0; i < cards[0].data.length; i++) {
-                if (editcontainer.id = cards[0].data[i]._id) {
-                    card = cards[0].data[i];
-                    break;
-                }
-            }
 
             var label = $('<label>');
             label.text($('#add-tag').val());
@@ -245,35 +267,17 @@ $(document).ready(function() {
             tagHolder.push($('#add-tag').val());
 
             $('#new-card-tags').prepend(label);
-            $.querySelector('#add-tag').val("");
+            $('#add-tag').val("");
         }
     });
 
     // Remove tags
     $('#new-card-tags').on('click', 'label', function () {
         console.log('Removed a tag!');
-        var card = {};
-
-        for (var i = 0; i < cards[0].data.length; i++) {
-            if (editcontainer.id = cards[0].data[i]._id) {
-                card = cards[0].data[i];
-                break;
-            }
-        }
-
         var index = tagHolder.indexOf(this.textContent);
         tagHolder.splice(index, 1);
         $(this).remove();
     });
-
-    // Clears edit container content
-    var clearEditContainerContent = function () {
-        $('#new-card-title').val("");
-        $('#new-card-notes').val("");
-        $('#new-card-tags label').remove();
-        tagHolder = [];
-        console.log('Card cleared!');
-    }
 
     // Click on preview container to bring up the full normal containers
     mainsection.on('click', '.preview-container', function () {
@@ -353,6 +357,7 @@ $(document).ready(function() {
         normalsection.empty();
         normalsection.addClass('hide');
         var title;
+        var author;
         var tags;
         var notes;
 
@@ -361,8 +366,13 @@ $(document).ready(function() {
                 console.log((cards[0].data)[i]);
 
                 title = (cards[0].data)[i].title;
+                if (cards[0].data[i].author != null) {
+                    author = (cards[0].data)[i].author.name;
+                }
+                else {
+                    author = "Somebody";
+                }
                 tags = (cards[0].data)[i].tags;
-                console.log(tags);
                 notes = (cards[0].data)[i].body;
                 break;
             }
@@ -373,45 +383,28 @@ $(document).ready(function() {
         console.log(notes);
 
         $('#new-card-title').val(title);
-        $('#new-card-title').attr('value', title);
+        $('#new-card-author').text(author);
 
         for (var i = tags.length - 1; i >= 0; i--) {
             var tag = $('<label>');
             tag.text(tags[i]);
-            console.log(tag);
             $('#new-card-tags').prepend(tag);
         }
 
         $('#new-card-notes').val(notes);
-        $('#new-card-notes').value = notes;
     });
 
     // Normal container exit button
     normalsection.on('click', '#normal-container .exit-button', function() {
-        idHolder = '';
-        normalsection.empty();
-        normalsection.addClass('hide');
-        mainsection.removeClass('darken');
+        hideModal();
     });
 
     $('.edit-container .exit-button').on('click', function () {
-        console.log('Done with the card!');
-        editcontainer.addClass('hide');
-        clearEditContainerContent();
-        normalsection.empty();
-        normalsection.addClass('hide');
-        idHolder = '';
-        mainsection.removeClass('darken');
+        hideModal();
     });
 
     $('.edit-container .cancel-button').on('click', function () {
-        console.log('Done with the card!');
-        editcontainer.addClass('hide');
-        clearEditContainerContent();
-        normalsection.empty();
-        normalsection.addClass('hide');
-        idHolder = '';
-        mainsection.removeClass('darken');
+        hideModal();
     });
 
     $('#register-form .exit-button').on('click', function () {
@@ -443,11 +436,11 @@ $(document).ready(function() {
                 socket.emit('chat message', response.data);
                 $('#chat textarea').val("");
                 console.log(response.data);
-                // Append to the message feed after listening for the chat message event
             },
         });
     });
 
+    // Append to the message feed after listening for the chat message event
     socket.on('chat message', function(msg) {
         console.log(addMessageCard(msg));
         $('#message-feed').append(addMessageCard(msg));
