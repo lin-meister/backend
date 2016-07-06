@@ -141,7 +141,8 @@ input {
     position: relative;
     background-color: transparent;
     border: thin solid white;
-    min-height: 300px;
+    vertical-align: top;
+    height: 400px;
     width: 250px;
     margin: 10px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
@@ -249,18 +250,15 @@ img {
 }
 
 .preview-box {
-    border-top: thin solid black;
-    border-bottom: thin solid black;
     text-align: center;
     margin-bottom: 10px;
     overflow-x: scroll;
-    white-space: nowrap;
 }
 
 .preview-box img {
     display: inline-block;
-    height: 150px;
     width: 100px;
+    height: 100px;
 }
 
 .preview-box img:hover {
@@ -344,6 +342,20 @@ img {
     margin: 0 auto;
 }
 
+.picture {
+    max-height: 100px;
+    max-width: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#upload-file {
+    padding: 10px;
+}
+
+#upload-file .input {
+    font-size: 20px;
+}
 .upload {
     margin: 10px;
     text-align: center;
@@ -399,7 +411,7 @@ img {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); /*Shadow*/
 }
 
-.message h1,p {
+.message h1, .message p {
     margin: 5px;
 }
 

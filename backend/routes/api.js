@@ -7,7 +7,6 @@ var Card = require('../models/cards');
 // GET routing requests to localhost:3000/
 // The function is the middleware function, which does something to the request and response and execute code in between
 router.get('/', function(req, res) {
-    console.log(req.body);
     if (req.user) {
         console.log(req.user + ' is logged in! Rendering cards');
         // Finds in the card array. Parameter is left empty since we have no criteria. cards is the data we return
@@ -41,7 +40,6 @@ router.get('/search', function(req, res) {
             console.log(err);
         } else {
             console.log('done');
-            console.log(cards);
             // Return the list of cards based on the criteria
             res.json({
                 data: cards
@@ -53,12 +51,12 @@ router.get('/search', function(req, res) {
 
 // POST routing requests to localhost:3000/ (adding and posting new cards)
 router.post('/', function(req, res) {
-    console.log(req.body);
     var card = new Card(
         {
             title: req.body.title,
             body: req.body.body,
             tags: req.body.tags,
+            images: req.body.images,
             author: {
                 id: req.user._id,
                 name: req.user.username
@@ -68,6 +66,7 @@ router.post('/', function(req, res) {
     card.save(function (err, card) {
         if (err) {
             console.log(err);
+            res.render('error', "Error 413: The file you are uploading is too large. Please try again.");
         } else {
             console.log('done');
             // Return the added card as a JSON

@@ -17,18 +17,16 @@
     <div class="search">
       <!-- EJS. If the user is logged in, display a welcome back message with their username, and an option to log out.
       If they are not, display buttons to register/login-->
-      <% if(user) {} else { %>
-        <button class="register">Register</button>
-      <% } %>
       <% if(user) { %>
         <button>Welcome back, <%=user.username%></button>
         <button class="logout"><a href="/users/logout">Log Out</a></button>
+      <input class="search-bar" type="text" placeholder="Search our website" required>
       <% }
       else { %>
-        <button class="login">Log in</button>
+      <button class="register">Register</button>
+      <button class="login">Log in</button>
       <% }
       %>
-      <input class="search-bar" type="text" placeholder="Search our website" required>
     </div>
   </nav>
 
@@ -84,13 +82,15 @@
       <div class="exit">
         <button class="exit-button">X</button>
       </div>
+
       <div class="text-field">
         <textarea id="new-card-notes" rows="10" cols="50" placeholder="Type your text here!"></textarea>
       </div>
+      <div class="picture hide">
+        <img id="uploaded-img" src="#" alt="your image" />
+      </div>
       <div class="upload">
-        <button class="action-button upload-button">
-          UPLOAD A FILE
-        </button>
+        <input type="file" id="upload-file" accept="image/*">
       </div>
 
       <hr>

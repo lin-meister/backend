@@ -40,26 +40,27 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true, parameterLimit:50000}));
+app.use(bodyParser.raw({limit: '50mb', extended: true, parameterLimit:50000}));
 app.use(cors());
 
 // Use a user session
 app.use(session({
-  cookieName: 'session',
-  secret: 'asdjklf;a;jra;lkjr',
-  duration: 30 * 60 * 1000,
-  activeDuration: 5 * 60 * 1000,
+  cookieName: 'session', // cookie name dictates the key name added to the request object
+  secret: 'asdjklf;a;jra;lkjr', // should be a large unguessable string
+  duration: 30 * 60 * 1000, // how long the session will stay valid in ms
+  activeDuration: 5 * 60 * 1000, // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
 }));
 
 // Set the request's user if it exists i.e. somebody is logged in
 app.use(function(req, res, next) {
-  console.log('User is being set right now!');
-  console.log(req.session)
   if (req.session && req.session.user) {
     User.findOne({ email: req.session.user.email }, function(err, user) {
       if (user) {
@@ -67,7 +68,6 @@ app.use(function(req, res, next) {
         delete req.user.password; // delete the password from the session
         req.session.user = user;  //refresh the session value
         res.locals.user = user;
-        console.log('User is created!');
       }
       // finishing processing the middleware and run the route
       next();
@@ -79,12 +79,12 @@ app.use(function(req, res, next) {
 
 // Route and match URL requests to their specific files that will handle related requests
 app.use('/', routes);
-app.use('/about', routes);
+// app.use('/about', routes);
 app.use('/api', api);
 app.use('/users', users);
 app.use('/messages', messages);
 
-// catch 404 and forward to error handlerF
+// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;

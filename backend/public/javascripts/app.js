@@ -21,16 +21,20 @@ $(document).ready(function() {
 
     // Function that adds preview card
     var addPreviewCard = function (card) {
-        var title;
-        if (card.title === "")
-            title = "Untitled";
-        else
-            title = card.title;
 
+        if (card.images[0] != "#") {
+
+        }
         var tags = '';
         for (var i = 0; i < card.tags.length; i++) {
             var tag = `<label>${card.tags[i]}</label>`;
             tags += tag;
+        }
+        var previewBox = ``;
+        if (card.images[0] != undefined) {
+            previewBox = `<div class="preview-box">
+                <img src="${card.images[0]}"/>
+            </div>`
         }
 
         var container = `<div class="preview-container" id="${card._id}">
@@ -38,7 +42,7 @@ $(document).ready(function() {
                 ${card.title === "" ? "Untitled" : card.title}
             </div>
             <div class="author">
-                ${card.author === undefined ? "" : card.author.name}
+                ${card.author === undefined ? "Somebody" : card.author.name}
             </div>
             <div class="tags">
                 ${tags}
@@ -46,6 +50,7 @@ $(document).ready(function() {
             <div class="text-field">
                 <p>${card.body}</p>     
             </div>
+            ${previewBox}
             <div class="date">
                  ${moment(card.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
             </div>
@@ -75,8 +80,13 @@ $(document).ready(function() {
     var clearEditContainerContent = function () {
         $('#add-tag').val("");
         $('#new-card-title').val("");
+        $('#new-card-author').text("");
         $('#new-card-notes').val("");
+        $('#new-card-notes').attr("rows", 10);
         $('#new-card-tags label').remove();
+        $('#upload-file').val("");
+        $('.picture').addClass('hide');
+        $('#uploaded-img').attr("src", "#");
         tagHolder = [];
         console.log('Card cleared!');
     }
@@ -177,7 +187,26 @@ $(document).ready(function() {
     $('#add-card-button').on('click', function () {
         console.log('Adding a new card!');
         editcontainer.removeClass('hide');
+        // $('#new-card-author').text(currentUser);
         mainsection.addClass('darken');
+    });
+
+    var readURL = function(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#uploaded-img').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+    
+    $('#upload-file').change(function() {
+        $('#new-card-notes').attr('rows', 5);
+        $('.picture').removeClass('hide');
+        readURL(this);
     });
 
     // Upload and create cards or edit them
@@ -187,13 +216,17 @@ $(document).ready(function() {
         if (cardID === '') {
             var newCardTitle = $('#new-card-title').val();
             var newCardNotes = $('#new-card-notes').val();
+            var newCardImg = [];
+            newCardImg.push($('#uploaded-img').attr('src'));
             var newCardObj = {
                 title: newCardTitle,
                 body: newCardNotes,
+                images: newCardImg,
                 tags: tagHolder
             };
 
             console.log('New card created!');
+            console.log(newCardObj.images);
 
             $.ajax({
                 url: "http://localhost:3000/api",
@@ -221,18 +254,23 @@ $(document).ready(function() {
         else {
             var newTitle = $('#new-card-title')[0].value;
             var newNotes = $('#new-card-notes')[0].value;
+            var newCardImg = [];
+            newCardImg.push($('#uploaded-img').attr('src'));
             var idToPatch = cardID;
             console.log(idToPatch);
             $.ajax({
                 url: "http://localhost:3000/api/" + idToPatch,
                 data: {
                     title: newTitle,
+                    body: newNotes,
+                    images: newCardImg,
                     tags: tagHolder,
-                    body: newNotes
                 },
                 type: "PATCH",
                 traditional: true,
                 success: function(response) {
+                    console.log(response.data);
+
                     // Hide and empty the content of the card
                     clearEditContainerContent();
                     editcontainer.addClass('hide');
@@ -244,6 +282,7 @@ $(document).ready(function() {
                          if (cards[0].data[i]._id === idHolder) {
                              cards[0].data[i].title = response.data.title;
                              cards[0].data[i].tags = response.data.tags;
+                             cards[0].data[i].images = response.data.images;
                              cards[0].data[i].body = response.data.body;
                          }
                     }
@@ -290,7 +329,12 @@ $(document).ready(function() {
 
         for (var i = 0; i < cards[0].data.length; i++) {
             if (cards[0].data[i]._id === idHolder) {
-                title = (cards[0].data)[i].title;
+                if ((cards[0].data)[i].title != '') {
+                    title = (cards[0].data)[i].title;
+                }
+                else {
+                    title = 'Untitled';
+                }
                 if ((cards[0].data)[i].author != null) {
                     author = (cards[0].data)[i].author.name;
                 }
@@ -358,6 +402,7 @@ $(document).ready(function() {
         normalsection.addClass('hide');
         var title;
         var author;
+        var images;
         var tags;
         var notes;
 
@@ -372,18 +417,18 @@ $(document).ready(function() {
                 else {
                     author = "Somebody";
                 }
+                images = (cards[0].data)[i].images;
                 tags = (cards[0].data)[i].tags;
                 notes = (cards[0].data)[i].body;
                 break;
             }
         }
 
-        console.log(title);
-        console.log(tags);
-        console.log(notes);
-
         $('#new-card-title').val(title);
         $('#new-card-author').text(author);
+        $('#new-card-notes').attr('rows', 5);
+        $('.picture').removeClass('hide');
+        $('#uploaded-img').attr('src', images[0]);
 
         for (var i = tags.length - 1; i >= 0; i--) {
             var tag = $('<label>');

@@ -3,8 +3,8 @@ var router = express.Router();
 var User = require('../models/users');
 
 /* GET users listing. */
-router.get('/', function(req, res, callback) {
-  console.log(req.body);
+router.get('/', function(req, res) {
+  // console.log(req.body);
   User.find({}, function(err, user) {
     if (err) {
       console.log(err);
@@ -20,28 +20,39 @@ router.get('/', function(req, res, callback) {
 
 router.post('/register', function(req, res) {
   console.log(req.body);
-  var user = new User(
-      {
-        username: req.body.name,
-        email: req.body.email,
-        password: req.body.password,
-      }
-  );
-  user.save(function (err, user) {
-    var params={
-      status: false
-    }
-    if (err) {
-      console.log(err);
-    } else {
-      params.status = true;
-      console.log('done');
-    }
+  var newUser;
+  User.findOne({email: req.body.email}, function(err, user) {
+    console.log('user', user);
+    if (!user) {
+      newUser = new User(
+          {
+            username: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+          }
+      );
 
-    req.session.user = user;
-    res.redirect('/');
+      newUser.save(function (err, user) {
+        var params={
+          status: false
+        }
+        if (err) {
+          console.log(err);
+        } else {
+          params.status = true;
+          console.log('done');
+        }
 
+        req.session.user = user;
+        res.redirect('/');
+
+      });
+    }
+    else {
+      console.log('User already exists!');
+    }
   });
+
 });
 
 router.post('/login', function(req, res) {
