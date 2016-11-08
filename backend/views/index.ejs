@@ -1,181 +1,144 @@
 <!DOCTYPE html>
 <head>
-  <title>Title</title>
+  <title>Lazy Students App</title>
   <link rel="stylesheet" href="stylesheets/stylesheet_light.css">
   <link href='https://fonts.googleapis.com/css?family=Product+Sans' rel='stylesheet' type='text/css'>
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
   <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script src="http://momentjs.com/downloads/moment.min.js"></script>
 </head>
+
 <body>
-<nav id="top">
-  <button>Logo</button>
-  <button><a href="index.html">Home</a></button>
-  <button><a href="about.html">About</a></button>
-  <div class="search">
-    <input class="search-bar" type="text" placeholder="Search our website" required>
-    <button class="search-button">Search</button>
-    <button class="register">Register</button>
-    <button class="login">Log In</button>
-  </div>
-</nav>
+  <!-- Navigation bar-->
+  <nav id="top">
+    <button>Lazy Students App</button>
+    <button><a href="/">Home</a></button>
+    <button><a href="/about">About</a></button>
+    <div class="search">
+      <!-- EJS. If the user is logged in, display a welcome back message with their username, and an option to log out.
+      If they are not, display buttons to register/login-->
+      <% if(user) { %>
+        <button>Welcome back, <%=user.username%></button>
+        <button class="logout"><a href="/users/logout">Log Out</a></button>
+      <input class="search-bar" type="text" placeholder="Search our website" required>
+      <% }
+      else { %>
+      <button class="register">Register</button>
+      <button class="login">Log in</button>
+      <% }
+      %>
+    </div>
+  </nav>
 
+  <!-- Main section where all the preview cards will be in-->
+  <section id="main-section">
+    <!-- The cards will display only if the user is logged in-->
+    <% if(user) { %>
+    <div class="add-card-div">
+      <button id="add-card-button">+ ADD CARD</button>
+    </div>
+    <div id="preview-cards-div">
+    </div>
+    <% } else { %>
+      <div id="description">
+        <h1>A web app for the daydreamers and procrastinators</h1>
+        <p>Register or log in to get started.</p>
+      </div>
+    <%}%>
+  </section>
 
-<section id="main-section">
-  <div class="add-card-div">
-    <button id="add-card-button">+ ADD CARD</button>
-  </div>
+  <section id="chat-section">
+    <% if(user) { %>
+      <div id="chat">
+        <div id="chat-heading">CHAT</div>
+        <div id="message-feed"></div>
+        <div class="text-field">
+          <textarea rows="3" cols="20" placeholder="Type your text here!"></textarea>
+          <div class="submit">
+            <button class="action-button submit-button">
+              SUBMIT
+            </button>
+          </div>
+        </div>
+      </div>
+    <% } else {} %>
+  </section>
 
-  <div class="preview-container hide">
-    <div class="title">Title</div>
-    <div class="author">Some guy</div>
-    <div class="tags">
-      <label>tag1</label>
-      <label>tag2</label>
-    </div>
-    <div class="preview">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-    </div>
-    <div class="date">
-      Date: MM-DD-YYYY
-    </div>
-  </div>
+  <section id="normal-section">
 
-  <!--<div class="preview-container">-->
-  <!--<div class="title">Title</div>-->
-  <!--<div class="author">Some guy</div>-->
-  <!--<div class="tags">-->
-  <!--<label>tag1</label>-->
-  <!--<label>tag2</label>-->
-  <!--</div>-->
-  <!--<div class="preview">-->
-  <!--<img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">-->
-  <!--</div>-->
-  <!--<div class="date">-->
-  <!--Date: MM-DD-YYYY-->
-  <!--</div>-->
-  <!--</div>-->
+  </section>
 
-  <div class="normal-container hide">
-    <div class="title">Title</div>
-    <div class="author">Some guy on MM-DD-YYYY</div>
-    <div class="tags">
-      <label>tag1</label>
-      <label>tag2</label>
-    </div>
-    <div class="exit">
-      <button class="exit-button">X</button>
-    </div>
-    <div class="text-field">
-      <p></p>
-    </div>
-    <div class="preview-box">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-      <img src="http://www.euractiv.com/wp-content/themes/euractiv_base/media/placeholder.png">
-    </div>
-    <div class="download">
-      <button class="action-button download-button">
-        DOWNLOAD
-      </button>
-    </div>
-  </div>
+  <section id="edit-section">
+    <div class="edit-container hide">
+      <div class="title">
+        <input id="new-card-title" placeholder="Enter the title">
+      </div>
+      <div class="author">
+        <label id="new-card-author"></label>
+      </div>
+      <div class="tags" id = "new-card-tags">
+        <input id="add-tag" placeholder="Add a tag...">
+      </div>
+      <div class="exit">
+        <button class="exit-button">X</button>
+      </div>
 
-  <div class="chat hide">
-    <div class="chat-heading">CHAT</div>
-    <div class="message-feed">
-      <div class="message">
-        <p><em>Some guy on MM-DD-YYYY</em></p>
-        <h1>Message</h1>
-        <p class="message-content">Some stuff</p>
+      <div class="text-field">
+        <textarea id="new-card-notes" rows="10" cols="50" placeholder="Type your text here!"></textarea>
+      </div>
+      <div class="picture hide">
+        <img id="uploaded-img" src="#" alt="your image" />
+      </div>
+      <div class="upload">
+        <input type="file" id="upload-file" accept="image/*">
+      </div>
+
+      <hr>
+
+      <div class="save">
+        <div class="button-list">
+          <button class="action-button save-button">
+            SAVE
+          </button>
+          <button class="action-button cancel-button">
+            CANCEL
+          </button>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="text-field">
-      <textarea rows="3" cols="20" placeholder="Type your text here!"></textarea>
-      <div class="submit">
-        <button class="action-button submit-button">
-          SUBMIT
-        </button>
+  <section id="user-section">
+    <form id="register-form" class="hide" method="post" action="http://localhost:3000/users/register">
+      <h1 class="title">Register an account</h1>
+      <div class="exit">
+        <button type="button" class="exit-button">X</button>
       </div>
-    </div>
-  </div>
+      <hr>
+      <input type="text" name="name" placeholder="Username">
+      <br>
+      <input type="text" name="email" placeholder="Email address">
+      <br>
+      <input type="password" name="password" placeholder="Password">
+      <br>
+      <input type="submit" value="REGISTER">
+    </form>
 
-</section>
-
-<section id="normal-section">
-
-</section>
-
-<section id="edit-section">
-  <div class="edit-container hide">
-    <div class="title">
-      <input id="new-card-title" placeholder="Enter the title">
-    </div>
-    <div class="author">
-      <label>Some guy on MM-DD-YYYY</label>
-    </div>
-    <div class="tags" id = "new-card-tags">
-      <input id="add-tag" placeholder="Add a tag...">
-    </div>
-    <div class="exit">
-      <button class="exit-button">X</button>
-    </div>
-    <div class="text-field">
-      <textarea id="new-card-notes" rows="10" cols="50" placeholder="Type your text here!"></textarea>
-    </div>
-    <div class="upload">
-      <button class="action-button upload-button">
-        UPLOAD A FILE
-      </button>
-    </div>
-
-    <hr>
-
-    <div class="save">
-      <div class="button-list">
-        <button class="action-button save-button">
-          SAVE
-        </button>
-        <button class="action-button cancel-button">
-          CANCEL
-        </button>
+    <form id="login-form" class="hide" method="post" action="http://localhost:3000/users/login">
+      <h1 class="title">Log in</h1>
+      <div class="exit">
+        <button type="button" class="exit-button">X</button>
       </div>
-    </div>
-  </div>
-</section>
+      <hr>
+      <input type="text" name="email" placeholder="Email address">
+      <br>
+      <input type="password" name="password" placeholder="Password">
+      <br>
+      <input type="submit" value="LOG IN">
+    </form>
+  </section>
 
-<section id="user-section">
-  <form id="register-form" class="hide" method="post" action="http://localhost:3000/users/register">
-    <h1 class="title">Register an account</h1>
-    <div class="exit">
-      <button type="button" class="exit-button">X</button>
-    </div>
-    <hr>
-    <input type="text" name="name" placeholder="Username">
-    <br>
-    <input type="text" name="email" placeholder="Email address">
-    <br>
-    <input type="password" name="password" placeholder="Password">
-    <br>
-    <input type="submit" value="REGISTER">
-  </form>
+  <script src="javascripts/app.js"></script>
 
-  <form id="login-form" class="hide" method="post" action="http://localhost:3000/users/login">
-    <h1 class="title">Log in</h1>
-    <div class="exit">
-      <button type="button" class="exit-button">X</button>
-    </div>
-    <hr>
-    <input type="text" name="email" placeholder="Email address">
-    <br>
-    <input type="password" name="password" placeholder="Password">
-    <br>
-    <input type="submit" value="LOG IN">
-  </form>
-</section>
-<script src="javascripts/app.js"></script>
-</body>
+  </body>
 </html>

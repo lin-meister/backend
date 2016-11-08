@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <title>Lazy Students App</title>
+    <link rel="stylesheet" href="stylesheets/stylesheet_light.css">
+    <link href='https://fonts.googleapis.com/css?family=Product+Sans' rel='stylesheet' type='text/css'>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="http://momentjs.com/downloads/moment.min.js"></script>
+</head>
+<body>
+<nav id="top">
+    <button>Lazy Students App</button>
+    <button><a href="/">Home</a></button>
+    <button><a href="/about">About</a></button>
+    <div class="search">
+        <!-- EJS. If the user is logged in, display a welcome back message with their username, and an option to log out.
+        If they are not, display buttons to register/login-->
+        <% if(user) {} else { %>
+        <button class="register">Register</button>
+        <% } %>
+        <% if(user) { %>
+        <button>Welcome back, <%=user.username%></button>
+        <button class="logout"><a href="/users/logout">Log Out</a></button>
+        <% }
+        else { %>
+        <button class="login">Log in</button>
+        <% }
+        %>
+    </div>
+</nav>
+<div id="description">
+    <h1>A web app for the daydreamers and procrastinators</h1>
+    <p>Lazy Students App is designed for students to upload, share, and discuss study materials in a collaborative environment.</p>
+</div>
+</body>
+</html>

@@ -90,8 +90,7 @@ input {
 
 .search-bar {
     background-color: transparent;
-    color: dodgerblue;
-    font-family: 'Product Sans',Arial,sans-serif;
+    color: white;
     font-size: 20px;
     margin: 10px;
     /*border-radius: 25px;*/
@@ -110,9 +109,19 @@ input {
 /*Main section*/
 #main-section {
     padding: 50px 20px;
+    width: 80%;
 }
 
-/*jQuery stuff*/
+#description {
+    position: absolute;
+    color: white;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
 #add-card-button {
     height: 300px;
     width: 250px;
@@ -132,7 +141,8 @@ input {
     position: relative;
     background-color: transparent;
     border: thin solid white;
-    min-height: 300px;
+    vertical-align: top;
+    height: 400px;
     width: 250px;
     margin: 10px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
@@ -153,12 +163,10 @@ input {
 }
 
 .author {
-    padding-left: 10px;
-}
-
-.preview-container .author {
     color: white;
+    padding-left: 10px;
     margin-bottom: 10px;
+
 }
 
 .tags {
@@ -189,7 +197,6 @@ img {
     right: 0;
     bottom: 0;
     display: block;
-    /*background-color: dodgerblue;*/
     color: white;
     text-align: right;
     border-top: thin solid white;
@@ -198,7 +205,7 @@ img {
 }
 
 /* Normal containers */
-.normal-container {
+#normal-container {
     position: fixed;
     background-color: transparent;
     height: auto;
@@ -218,9 +225,7 @@ img {
 }
 
 .normal-container .author {
-    color: white;
     font-size: 20px;
-    margin-bottom: 10px;
 }
 
 .exit-button {
@@ -239,25 +244,21 @@ img {
 
 .text-field p {
     max-height: 150px;
-    border: thin dashed black;
-    overflow-y: scroll;
+    border: thin dashed white;
     padding: 10px;
+    overflow-y: scroll;
 }
 
 .preview-box {
-    border-top: thin solid black;
-    border-bottom: thin solid black;
     text-align: center;
     margin-bottom: 10px;
     overflow-x: scroll;
-    white-space: nowrap;
 }
 
 .preview-box img {
     display: inline-block;
-    width: 30%;
-    height: 150px;
     width: 100px;
+    height: 100px;
 }
 
 .preview-box img:hover {
@@ -300,18 +301,15 @@ img {
 .edit-container {
     position: fixed;
     background-color: transparent;
-    opacity: 2;
     height: 600px;
     width: 500px;
     margin: 20px;
     border: thin solid white;
     top: 50%;
     left: 50%;
-
     -webkit-transform: translate(-50%,-50%);
     transform: translate(-50%,-50%);
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-    /*Shadow*/
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); /*Shadow*/
     z-index: 1;
 }
 
@@ -320,25 +318,16 @@ img {
 }
 
 .edit-container .author {
-    color: white;
     font-size: 20px;
-    margin-bottom: 10px;
 }
 
 .edit-container input {
     background-color: transparent;
-    color: dodgerblue;
-    font-family: 'Product Sans',Arial,sans-serif;
 }
 
 .edit-container .title input {
     color: white;
     font-size: 36px;
-}
-
-.edit-container .author input {
-    font-size: 16px;
-    max-width: 50px;
 }
 
 .edit-container .tags input {
@@ -353,6 +342,20 @@ img {
     margin: 0 auto;
 }
 
+.picture {
+    max-height: 100px;
+    max-width: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#upload-file {
+    padding: 10px;
+}
+
+#upload-file .input {
+    font-size: 20px;
+}
 .upload {
     margin: 10px;
     text-align: center;
@@ -372,7 +375,7 @@ img {
     margin: 10px;
 }
 
-.chat {
+#chat {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -386,14 +389,14 @@ img {
     z-index: 1;
 }
 
-.chat-heading {
+#chat-heading {
     font-size: 36px;
     padding: 10px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     /*Shadow*/
 }
 
-.message-feed {
+#message-feed {
     flex-grow: 1;
     background-color: transparent;
     color: white;
@@ -405,27 +408,28 @@ img {
 .message {
     margin: 10px;
     border: thin solid white;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-    /*Shadow*/
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); /*Shadow*/
 }
 
-.message h1,p {
+.message h1, .message p {
     margin: 5px;
 }
 
-.chat .text-field {
-    background-color: transparent;
+.message .message-description {
+    font-size: 12px;
+}
+
+#chat .text-field {
     text-align: center;
 }
 
-.chat textarea {
+#chat textarea {
     background-color: transparent;
     color: white;
 }
 
 #user-section form {
     position: fixed;
-
     margin: 20px;
     border: thin solid white;
     top: 50%;
