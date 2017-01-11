@@ -231,8 +231,8 @@ img {
 
 .exit-button {
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 0px;
+    top: 0px;
     background-color: red;
     color: white;
 }
@@ -328,6 +328,7 @@ img {
 .edit-container .title input {
     color: white;
     font-size: 36px;
+    width: 90%;
 }
 
 .edit-container .tags input {
