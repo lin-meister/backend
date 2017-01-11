@@ -48,7 +48,7 @@ $(document).ready(function() {
                 ${tags}
             </div>
             <div class="text-field">
-                <p>${card.body}</p>     
+                <p>${card.body}</p>
             </div>
             ${previewBox}
             <div class="date">
@@ -98,7 +98,6 @@ $(document).ready(function() {
          clearEditContainerContent();
          normalsection.empty();
          normalsection.addClass('hide');
-         idHolder = '';
          mainsection.removeClass('darken');
      }
 
@@ -202,7 +201,7 @@ $(document).ready(function() {
             reader.readAsDataURL(input.files[0]);
         }
     };
-    
+
     $('#upload-file').change(function() {
         $('#new-card-notes').attr('rows', 5);
         $('.picture').removeClass('hide');
@@ -369,6 +368,7 @@ $(document).ready(function() {
             </div>
         </div>`
 
+        hideModal();
         normalsection.append(container);
         normalsection.removeClass('hide');
         mainsection.addClass('darken');
@@ -400,11 +400,9 @@ $(document).ready(function() {
         mainsection.addClass('darken');
         normalsection.empty();
         normalsection.addClass('hide');
-        var title;
-        var author;
-        var images;
-        var tags;
-        var notes;
+        var title, author, images, tags, notes;
+
+        console.log(idHolder);
 
         for (var i = 0; i < cards[0].data.length; i++) {
             if (cards[0].data[i]._id === idHolder) {
@@ -424,11 +422,13 @@ $(document).ready(function() {
             }
         }
 
+        console.log(tags);
+
         $('#new-card-title').val(title);
         $('#new-card-author').text(author);
         $('#new-card-notes').attr('rows', 5);
         $('.picture').removeClass('hide');
-        $('#uploaded-img').attr('src', images[0]);
+        if (images) $('#uploaded-img').attr('src', images[0]);
 
         for (var i = tags.length - 1; i >= 0; i--) {
             var tag = $('<label>');
