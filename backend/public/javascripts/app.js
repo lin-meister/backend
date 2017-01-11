@@ -155,7 +155,7 @@ $(document).ready(function() {
     });
 
     // Search
-    $('#top .search-bar').on('keyup', function() {
+    $('#top .search-bar').on('keydown', function() {
         console.log('Searching for something!');
         var criteria = $('#top .search-bar').val();
 
