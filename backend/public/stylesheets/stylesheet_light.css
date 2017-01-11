@@ -1,6 +1,6 @@
 body {
     font-family: 'Product Sans',Arial,sans-serif;
-    background: linear-gradient(rgba(0,0,0,0.25),rgba(0,0,0,0.25)),url(http://www.galaxiastudio.com/wp-content/uploads/2014/03/2252.jpg);
+    background: linear-gradient(rgba(0,0,0,0.25),rgba(0,0,0,0.25)),url('./background.jpg');
 }
 
 .darken {
@@ -21,6 +21,7 @@ button {
     color: white;
     font-family: 'Product Sans',Arial,sans-serif;
     border: thin solid white;
+    margin: 16px;
     padding: 10px;
 }
 
@@ -301,7 +302,6 @@ img {
 .edit-container {
     position: fixed;
     background-color: transparent;
-    height: 600px;
     width: 500px;
     margin: 20px;
     border: thin solid white;
